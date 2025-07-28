@@ -10,13 +10,41 @@ import {
   Search,
   Filter,
   Download,
-  Printer
+  Printer,
+  Trash2,
+  Edit
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("invoices");
+
+  const handleNewInvoice = () => {
+    alert("New Invoice functionality will be implemented");
+  };
+
+  const handleRecordPayment = () => {
+    alert("Record Payment functionality will be implemented");
+  };
+
+  const handleAddCustomer = () => {
+    alert("Add Customer functionality will be implemented");
+  };
+
+  const handleEditInvoice = (invoiceId: number) => {
+    alert(`Edit Invoice #${invoiceId} functionality will be implemented`);
+  };
+
+  const handleDeleteInvoice = (invoiceId: number) => {
+    if (confirm(`Are you sure you want to delete Invoice #${invoiceId}?`)) {
+      alert(`Invoice #${invoiceId} deleted successfully`);
+    }
+  };
+
+  const handlePrintInvoice = (invoiceId: number) => {
+    alert(`Print Invoice #${invoiceId} functionality will be implemented`);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
@@ -97,7 +125,7 @@ const Index = () => {
                         <Download className="h-4 w-4 mr-2" />
                         Export
                       </Button>
-                      <Button className="bg-blue-600 hover:bg-blue-700">
+                      <Button className="bg-blue-600 hover:bg-blue-700" onClick={handleNewInvoice}>
                         <Plus className="h-4 w-4 mr-2" />
                         New Invoice
                       </Button>
@@ -127,10 +155,15 @@ const Index = () => {
                                 </span>
                               </div>
                               <div className="flex gap-2">
-                                <Button variant="outline" size="sm">
+                                <Button variant="outline" size="sm" onClick={() => handlePrintInvoice(invoice)}>
                                   <Printer className="h-4 w-4" />
                                 </Button>
-                                <Button variant="outline" size="sm">Edit</Button>
+                                <Button variant="outline" size="sm" onClick={() => handleEditInvoice(invoice)}>
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button variant="outline" size="sm" onClick={() => handleDeleteInvoice(invoice)}>
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
                               </div>
                             </div>
                           </div>
@@ -153,7 +186,7 @@ const Index = () => {
                         <Filter className="h-4 w-4 mr-2" />
                         Filter
                       </Button>
-                      <Button className="bg-green-600 hover:bg-green-700">
+                      <Button className="bg-green-600 hover:bg-green-700" onClick={handleRecordPayment}>
                         <Plus className="h-4 w-4 mr-2" />
                         Record Payment
                       </Button>
@@ -197,7 +230,7 @@ const Index = () => {
                         <Filter className="h-4 w-4 mr-2" />
                         Filter
                       </Button>
-                      <Button className="bg-purple-600 hover:bg-purple-700">
+                      <Button className="bg-purple-600 hover:bg-purple-700" onClick={handleAddCustomer}>
                         <Plus className="h-4 w-4 mr-2" />
                         Add Customer
                       </Button>
