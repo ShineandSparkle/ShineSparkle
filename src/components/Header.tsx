@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from "react-router-dom";
 
 const Header = () => {
@@ -10,21 +9,29 @@ const Header = () => {
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-4 hover:opacity-90 transition-opacity">
             <div className="bg-white rounded-full p-3 flex items-center justify-center">
-              <img
-                src="/Logo.png"
-                alt="Shine & Sparkle Logo"
-                className="h-16 w-16 object-contain"
-              />
+                <img
+                  src="/Logo.png"
+                  alt="Shine & Sparkle Logo"
+                  className="h-10 w-10 object-contain"
+                />
             </div>
             <div className="flex flex-col justify-center">
               <h1 className="text-2xl font-bold">SHINE & SPARKLE</h1>
             </div>
           </Link>
-          <nav className="hidden md:flex space-x-6">
-            <Link to="/" className="hover:text-blue-200 transition-colors">Invoice System</Link>
-            <Link to="/formulations" className="hover:text-blue-200 transition-colors">Formulations</Link>
-            <Link to="/about" className="hover:text-blue-200 transition-colors">About</Link>
-            <Link to="/contact" className="hover:text-blue-200 transition-colors">Contact</Link>
+          <nav className="hidden md:flex space-x-4">
+            <Link
+              to="/"
+              className="bg-white text-blue-600 font-semibold py-2 px-4 rounded-lg shadow hover:bg-blue-100 transition-colors"
+            >
+              Invoice System
+            </Link>
+            <Link
+              to="/formulations"
+              className="bg-white text-blue-600 font-semibold py-2 px-4 rounded-lg shadow hover:bg-blue-100 transition-colors"
+            >
+              Formulations
+            </Link>
           </nav>
         </div>
       </div>

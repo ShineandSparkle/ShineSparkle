@@ -27,23 +27,9 @@ const Index = () => {
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [customerModalOpen, setCustomerModalOpen] = useState(false);
   const [editingInvoice, setEditingInvoice] = useState<any>(null);
-  const [invoices, setInvoices] = useState([
-    { id: 1, customerName: "ABC Company Ltd.", customerEmail: "contact@abc.com", customerPhone: "+91 98765 43210", date: "2024-01-20", amount: 2500, status: "Paid" },
-    { id: 2, customerName: "XYZ Industries", customerEmail: "info@xyz.com", customerPhone: "+91 98765 43211", date: "2024-01-22", amount: 5000, status: "Pending" },
-    { id: 3, customerName: "PQR Enterprises", customerEmail: "admin@pqr.com", customerPhone: "+91 98765 43212", date: "2024-01-25", amount: 7500, status: "Overdue" }
-  ]);
-  const [payments, setPayments] = useState([
-    { id: 1, customerName: "ABC Company Ltd.", amount: 1250, method: "UPI", date: "2024-01-20" },
-    { id: 2, customerName: "XYZ Industries", amount: 2500, method: "Bank Transfer", date: "2024-01-22" },
-    { id: 3, customerName: "PQR Enterprises", amount: 3750, method: "Cash", date: "2024-01-25" },
-    { id: 4, customerName: "LMN Corp", amount: 5000, method: "Bank Transfer", date: "2024-01-28" }
-  ]);
-  const [customers, setCustomers] = useState([
-    { id: 1, name: "ABC Company Ltd.", email: "contact@abc.com", phone: "+91 98765 43210", totalBusiness: 5000 },
-    { id: 2, name: "XYZ Industries", email: "info@xyz.com", phone: "+91 98765 43211", totalBusiness: 10000 },
-    { id: 3, name: "PQR Enterprises", email: "admin@pqr.com", phone: "+91 98765 43212", totalBusiness: 15000 },
-    { id: 4, name: "LMN Corp", email: "contact@lmn.com", phone: "+91 98765 43213", totalBusiness: 20000 }
-  ]);
+  const [invoices, setInvoices] = useState([]);
+  const [payments, setPayments] = useState([]);
+  const [customers, setCustomers] = useState([]);
 
   const handleNewInvoice = () => {
     setEditingInvoice(null);
@@ -104,34 +90,49 @@ const Index = () => {
             <h2 className="text-4xl font-bold text-slate-800 mb-4">
               Invoice Management System
             </h2>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+            {/*<p className="text-xl text-slate-600 max-w-3xl mx-auto">
               Complete invoice, payment, and customer management solution for your business
-            </p>
+            </p>*/}
           </div>
 
           {/* Quick Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <Card className="text-center p-6 bg-white/70 backdrop-blur-sm">
               <FileText className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-              <h3 className="text-2xl font-bold text-blue-600 mb-1">24</h3>
+              <h3 className="text-2xl font-bold text-blue-600 mb-1">
+                {invoices.length}
+              </h3>
               <p className="text-slate-600">Total Invoices</p>
             </Card>
+
             <Card className="text-center p-6 bg-white/70 backdrop-blur-sm">
               <CreditCard className="h-8 w-8 text-green-600 mx-auto mb-2" />
-              <h3 className="text-2xl font-bold text-green-600 mb-1">₹45,230</h3>
+              <h3 className="text-2xl font-bold text-green-600 mb-1">
+                ₹{payments.reduce((total, p) => total + p.amount, 0).toLocaleString()}
+              </h3>
               <p className="text-slate-600">Payments Received</p>
             </Card>
+
             <Card className="text-center p-6 bg-white/70 backdrop-blur-sm">
               <FileText className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-              <h3 className="text-2xl font-bold text-orange-600 mb-1">₹12,450</h3>
+              <h3 className="text-2xl font-bold text-orange-600 mb-1">
+                ₹{invoices
+                  .filter(inv => inv.status !== "Paid")
+                  .reduce((total, inv) => total + inv.amount, 0)
+                  .toLocaleString()}
+              </h3>
               <p className="text-slate-600">Pending Payments</p>
             </Card>
+
             <Card className="text-center p-6 bg-white/70 backdrop-blur-sm">
               <Users className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-              <h3 className="text-2xl font-bold text-purple-600 mb-1">18</h3>
+              <h3 className="text-2xl font-bold text-purple-600 mb-1">
+                {customers.length}
+              </h3>
               <p className="text-slate-600">Active Customers</p>
             </Card>
           </div>
+
 
           {/* Main Content */}
           <Card className="bg-white/80 backdrop-blur-sm">
