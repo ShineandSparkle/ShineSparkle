@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,18 +10,37 @@ interface InvoiceModalProps {
   open: boolean;
   onClose: () => void;
   invoice?: any;
+  customers: any[];
   onSave: (invoiceData: any) => void;
 }
 
-const InvoiceModal = ({ open, onClose, invoice, onSave }: InvoiceModalProps) => {
+const InvoiceModal = ({ open, onClose, invoice, customers, onSave }: InvoiceModalProps) => {
   const [formData, setFormData] = useState({
+    customerId: invoice?.customerId || "",
     customerName: invoice?.customerName || "",
     customerEmail: invoice?.customerEmail || "",
     customerPhone: invoice?.customerPhone || "",
+    customerAddress: invoice?.customerAddress || "",
+    customerGstNumber: invoice?.customerGstNumber || "",
     items: invoice?.items || [{ description: "", quantity: 1, rate: 0, amount: 0 }],
     taxRate: invoice?.taxRate || 18,
     notes: invoice?.notes || ""
   });
+
+  const handleCustomerSelect = (customerId: string) => {
+    const selectedCustomer = customers.find(c => c.id.toString() === customerId);
+    if (selectedCustomer) {
+      setFormData({
+        ...formData,
+        customerId: customerId,
+        customerName: selectedCustomer.name,
+        customerEmail: selectedCustomer.email || "",
+        customerPhone: selectedCustomer.phone || "",
+        customerAddress: selectedCustomer.address || "",
+        customerGstNumber: selectedCustomer.gstNumber || ""
+      });
+    }
+  };
 
   const handleItemChange = (index: number, field: string, value: any) => {
     const newItems = [...formData.items];
@@ -68,15 +87,34 @@ const InvoiceModal = ({ open, onClose, invoice, onSave }: InvoiceModalProps) => 
         </DialogHeader>
         
         <div className="space-y-6">
+          {/* Customer Selection */}
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <Label htmlFor="customer">Select Customer</Label>
+              <Select value={formData.customerId} onValueChange={handleCustomerSelect}>
+                <SelectTrigger className="bg-white">
+                  <SelectValue placeholder="Choose existing customer or add manually" />
+                </SelectTrigger>
+                <SelectContent className="bg-white border shadow-lg z-50">
+                  {customers.map((customer) => (
+                    <SelectItem key={customer.id} value={customer.id.toString()}>
+                      {customer.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
           {/* Customer Information */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="customerName">Customer Name</Label>
               <Input
                 id="customerName"
                 value={formData.customerName}
                 onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
-                placeholder="Enter customer name"
+                placeholder="Enter customer name manually"
               />
             </div>
             <div>
@@ -89,6 +127,9 @@ const InvoiceModal = ({ open, onClose, invoice, onSave }: InvoiceModalProps) => 
                 placeholder="customer@email.com"
               />
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="customerPhone">Phone</Label>
               <Input
@@ -98,6 +139,26 @@ const InvoiceModal = ({ open, onClose, invoice, onSave }: InvoiceModalProps) => 
                 placeholder="+91 98765 43210"
               />
             </div>
+            <div>
+              <Label htmlFor="customerGstNumber">GST Number</Label>
+              <Input
+                id="customerGstNumber"
+                value={formData.customerGstNumber}
+                onChange={(e) => setFormData({ ...formData, customerGstNumber: e.target.value })}
+                placeholder="GST number"
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="customerAddress">Address</Label>
+            <Textarea
+              id="customerAddress"
+              value={formData.customerAddress}
+              onChange={(e) => setFormData({ ...formData, customerAddress: e.target.value })}
+              placeholder="Customer address"
+              className="h-20"
+            />
           </div>
 
           {/* Items */}
@@ -156,10 +217,10 @@ const InvoiceModal = ({ open, onClose, invoice, onSave }: InvoiceModalProps) => 
             <div>
               <Label htmlFor="taxRate">Tax Rate (%)</Label>
               <Select value={formData.taxRate.toString()} onValueChange={(value) => setFormData({ ...formData, taxRate: Number(value) })}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-white">
                   <SelectValue placeholder="Select tax rate" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white border shadow-lg z-50">
                   <SelectItem value="0">0% (No Tax)</SelectItem>
                   <SelectItem value="5">5% GST</SelectItem>
                   <SelectItem value="12">12% GST</SelectItem>

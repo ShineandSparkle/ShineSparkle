@@ -19,7 +19,7 @@ import Footer from "@/components/Footer";
 import InvoiceModal from "@/components/InvoiceModal";
 import PaymentModal from "@/components/PaymentModal";
 import CustomerModal from "@/components/CustomerModal";
-import InvoicePrint from "@/components/InvoicePrint";
+import printInvoice from "@/components/InvoicePrint";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("invoices");
@@ -73,8 +73,7 @@ const Index = () => {
   const handlePrintInvoice = (invoiceId: number) => {
     const invoice = invoices.find(inv => inv.id === invoiceId);
     if (invoice) {
-      const { printInvoice } = InvoicePrint({ invoice });
-      printInvoice();
+      printInvoice(invoice);
     }
   };
 
@@ -317,6 +316,7 @@ const Index = () => {
         open={invoiceModalOpen} 
         onClose={() => setInvoiceModalOpen(false)}
         invoice={editingInvoice}
+        customers={customers}
         onSave={handleSaveInvoice}
       />
       <PaymentModal 
