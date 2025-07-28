@@ -16,34 +16,82 @@ import {
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import InvoiceModal from "@/components/InvoiceModal";
+import PaymentModal from "@/components/PaymentModal";
+import CustomerModal from "@/components/CustomerModal";
+import InvoicePrint from "@/components/InvoicePrint";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("invoices");
+  const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [customerModalOpen, setCustomerModalOpen] = useState(false);
+  const [editingInvoice, setEditingInvoice] = useState<any>(null);
+  const [invoices, setInvoices] = useState([
+    { id: 1, customerName: "ABC Company Ltd.", customerEmail: "contact@abc.com", customerPhone: "+91 98765 43210", date: "2024-01-20", amount: 2500, status: "Paid" },
+    { id: 2, customerName: "XYZ Industries", customerEmail: "info@xyz.com", customerPhone: "+91 98765 43211", date: "2024-01-22", amount: 5000, status: "Pending" },
+    { id: 3, customerName: "PQR Enterprises", customerEmail: "admin@pqr.com", customerPhone: "+91 98765 43212", date: "2024-01-25", amount: 7500, status: "Overdue" }
+  ]);
+  const [payments, setPayments] = useState([
+    { id: 1, customerName: "ABC Company Ltd.", amount: 1250, method: "UPI", date: "2024-01-20" },
+    { id: 2, customerName: "XYZ Industries", amount: 2500, method: "Bank Transfer", date: "2024-01-22" },
+    { id: 3, customerName: "PQR Enterprises", amount: 3750, method: "Cash", date: "2024-01-25" },
+    { id: 4, customerName: "LMN Corp", amount: 5000, method: "Bank Transfer", date: "2024-01-28" }
+  ]);
+  const [customers, setCustomers] = useState([
+    { id: 1, name: "ABC Company Ltd.", email: "contact@abc.com", phone: "+91 98765 43210", totalBusiness: 5000 },
+    { id: 2, name: "XYZ Industries", email: "info@xyz.com", phone: "+91 98765 43211", totalBusiness: 10000 },
+    { id: 3, name: "PQR Enterprises", email: "admin@pqr.com", phone: "+91 98765 43212", totalBusiness: 15000 },
+    { id: 4, name: "LMN Corp", email: "contact@lmn.com", phone: "+91 98765 43213", totalBusiness: 20000 }
+  ]);
 
   const handleNewInvoice = () => {
-    alert("New Invoice functionality will be implemented");
+    setEditingInvoice(null);
+    setInvoiceModalOpen(true);
   };
 
   const handleRecordPayment = () => {
-    alert("Record Payment functionality will be implemented");
+    setPaymentModalOpen(true);
   };
 
   const handleAddCustomer = () => {
-    alert("Add Customer functionality will be implemented");
+    setCustomerModalOpen(true);
   };
 
   const handleEditInvoice = (invoiceId: number) => {
-    alert(`Edit Invoice #${invoiceId} functionality will be implemented`);
+    const invoice = invoices.find(inv => inv.id === invoiceId);
+    setEditingInvoice(invoice);
+    setInvoiceModalOpen(true);
   };
 
   const handleDeleteInvoice = (invoiceId: number) => {
     if (confirm(`Are you sure you want to delete Invoice #${invoiceId}?`)) {
-      alert(`Invoice #${invoiceId} deleted successfully`);
+      setInvoices(invoices.filter(inv => inv.id !== invoiceId));
     }
   };
 
   const handlePrintInvoice = (invoiceId: number) => {
-    alert(`Print Invoice #${invoiceId} functionality will be implemented`);
+    const invoice = invoices.find(inv => inv.id === invoiceId);
+    if (invoice) {
+      const { printInvoice } = InvoicePrint({ invoice });
+      printInvoice();
+    }
+  };
+
+  const handleSaveInvoice = (invoiceData: any) => {
+    if (editingInvoice) {
+      setInvoices(invoices.map(inv => inv.id === editingInvoice.id ? invoiceData : inv));
+    } else {
+      setInvoices([...invoices, invoiceData]);
+    }
+  };
+
+  const handleSavePayment = (paymentData: any) => {
+    setPayments([...payments, paymentData]);
+  };
+
+  const handleSaveCustomer = (customerData: any) => {
+    setCustomers([...customers, { ...customerData, totalBusiness: 0 }]);
   };
 
   return (
@@ -134,34 +182,34 @@ const Index = () => {
 
                   <div className="grid gap-4">
                     {/* Sample Invoice Cards */}
-                    {[1, 2, 3].map((invoice) => (
-                      <Card key={invoice} className="hover:shadow-md transition-shadow">
+                    {invoices.map((invoice) => (
+                      <Card key={invoice.id} className="hover:shadow-md transition-shadow">
                         <CardContent className="p-6">
                           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <div className="space-y-1">
-                              <h4 className="font-semibold text-slate-800">Invoice #INV-{String(invoice).padStart(3, '0')}</h4>
-                              <p className="text-sm text-slate-600">Customer: ABC Company Ltd.</p>
-                              <p className="text-sm text-slate-500">Date: {new Date().toLocaleDateString()}</p>
+                              <h4 className="font-semibold text-slate-800">Invoice #INV-{String(invoice.id).padStart(3, '0')}</h4>
+                              <p className="text-sm text-slate-600">Customer: {invoice.customerName}</p>
+                              <p className="text-sm text-slate-500">Date: {new Date(invoice.date).toLocaleDateString()}</p>
                             </div>
                             <div className="flex items-center gap-4">
                               <div className="text-right">
-                                <p className="font-semibold text-slate-800">₹{(invoice * 2500).toLocaleString()}</p>
+                                <p className="font-semibold text-slate-800">₹{invoice.amount.toLocaleString()}</p>
                                 <span className={`text-xs px-2 py-1 rounded-full ${
-                                  invoice === 1 ? 'bg-green-100 text-green-700' : 
-                                  invoice === 2 ? 'bg-orange-100 text-orange-700' : 
+                                  invoice.status === 'Paid' ? 'bg-green-100 text-green-700' : 
+                                  invoice.status === 'Pending' ? 'bg-orange-100 text-orange-700' : 
                                   'bg-red-100 text-red-700'
                                 }`}>
-                                  {invoice === 1 ? 'Paid' : invoice === 2 ? 'Pending' : 'Overdue'}
+                                  {invoice.status}
                                 </span>
                               </div>
                               <div className="flex gap-2">
-                                <Button variant="outline" size="sm" onClick={() => handlePrintInvoice(invoice)}>
+                                <Button variant="outline" size="sm" onClick={() => handlePrintInvoice(invoice.id)}>
                                   <Printer className="h-4 w-4" />
                                 </Button>
-                                <Button variant="outline" size="sm" onClick={() => handleEditInvoice(invoice)}>
+                                <Button variant="outline" size="sm" onClick={() => handleEditInvoice(invoice.id)}>
                                   <Edit className="h-4 w-4" />
                                 </Button>
-                                <Button variant="outline" size="sm" onClick={() => handleDeleteInvoice(invoice)}>
+                                <Button variant="outline" size="sm" onClick={() => handleDeleteInvoice(invoice.id)}>
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
                               </div>
@@ -195,20 +243,18 @@ const Index = () => {
 
                   <div className="grid gap-4">
                     {/* Sample Payment Cards */}
-                    {[1, 2, 3, 4].map((payment) => (
-                      <Card key={payment} className="hover:shadow-md transition-shadow">
+                    {payments.map((payment) => (
+                      <Card key={payment.id} className="hover:shadow-md transition-shadow">
                         <CardContent className="p-6">
                           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <div className="space-y-1">
-                              <h4 className="font-semibold text-slate-800">Payment #{String(payment).padStart(3, '0')}</h4>
-                              <p className="text-sm text-slate-600">From: Customer {payment}</p>
-                              <p className="text-sm text-slate-500">
-                                Method: {payment % 2 === 0 ? 'Bank Transfer' : payment % 3 === 0 ? 'Cash' : 'UPI'}
-                              </p>
+                              <h4 className="font-semibold text-slate-800">Payment #{String(payment.id).padStart(3, '0')}</h4>
+                              <p className="text-sm text-slate-600">From: {payment.customerName}</p>
+                              <p className="text-sm text-slate-500">Method: {payment.method}</p>
                             </div>
                             <div className="text-right">
-                              <p className="font-semibold text-green-600">₹{(payment * 1250).toLocaleString()}</p>
-                              <p className="text-sm text-slate-500">{new Date().toLocaleDateString()}</p>
+                              <p className="font-semibold text-green-600">₹{payment.amount.toLocaleString()}</p>
+                              <p className="text-sm text-slate-500">{new Date(payment.date).toLocaleDateString()}</p>
                             </div>
                           </div>
                         </CardContent>
@@ -239,17 +285,17 @@ const Index = () => {
 
                   <div className="grid gap-4">
                     {/* Sample Customer Cards */}
-                    {['ABC Company Ltd.', 'XYZ Industries', 'PQR Enterprises', 'LMN Corp'].map((customer, index) => (
-                      <Card key={customer} className="hover:shadow-md transition-shadow">
+                    {customers.map((customer) => (
+                      <Card key={customer.id} className="hover:shadow-md transition-shadow">
                         <CardContent className="p-6">
                           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <div className="space-y-1">
-                              <h4 className="font-semibold text-slate-800">{customer}</h4>
-                              <p className="text-sm text-slate-600">contact@{customer.toLowerCase().replace(/[^a-z]/g, '')}.com</p>
-                              <p className="text-sm text-slate-500">+91 98765 4321{index}</p>
+                              <h4 className="font-semibold text-slate-800">{customer.name}</h4>
+                              <p className="text-sm text-slate-600">{customer.email}</p>
+                              <p className="text-sm text-slate-500">{customer.phone}</p>
                             </div>
                             <div className="text-right">
-                              <p className="font-semibold text-slate-800">₹{((index + 1) * 5000).toLocaleString()}</p>
+                              <p className="font-semibold text-slate-800">₹{customer.totalBusiness.toLocaleString()}</p>
                               <p className="text-sm text-slate-500">Total Business</p>
                             </div>
                           </div>
@@ -265,6 +311,24 @@ const Index = () => {
       </main>
 
       <Footer />
+
+      {/* Modals */}
+      <InvoiceModal 
+        open={invoiceModalOpen} 
+        onClose={() => setInvoiceModalOpen(false)}
+        invoice={editingInvoice}
+        onSave={handleSaveInvoice}
+      />
+      <PaymentModal 
+        open={paymentModalOpen} 
+        onClose={() => setPaymentModalOpen(false)}
+        onSave={handleSavePayment}
+      />
+      <CustomerModal 
+        open={customerModalOpen} 
+        onClose={() => setCustomerModalOpen(false)}
+        onSave={handleSaveCustomer}
+      />
     </div>
   );
 };
