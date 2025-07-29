@@ -17,29 +17,26 @@ const CustomerModal = ({ open, onClose, onSave }: CustomerModalProps) => {
     email: "",
     phone: "",
     address: "",
-    city: "",
-    state: "",
-    pincode: "",
-    gstNumber: "",
-    notes: ""
+    gst_no: ""
   });
 
   const handleSave = () => {
+    const fullAddress = [formData.address].filter(Boolean).join(", ");
+    
     onSave({
-      ...formData,
-      id: Date.now(),
-      createdAt: new Date().toISOString()
+      name: formData.name,
+      email: formData.email || null,
+      phone: formData.phone || null,
+      address: fullAddress || null,
+      gst_no: formData.gst_no || null
     });
+    
     setFormData({
       name: "",
       email: "",
       phone: "",
       address: "",
-      city: "",
-      state: "",
-      pincode: "",
-      gstNumber: "",
-      notes: ""
+      gst_no: ""
     });
     onClose();
   };
@@ -86,11 +83,11 @@ const CustomerModal = ({ open, onClose, onSave }: CustomerModalProps) => {
               />
             </div>
             <div>
-              <Label htmlFor="gstNumber">GST Number</Label>
+              <Label htmlFor="gst_no">GST Number</Label>
               <Input
-                id="gstNumber"
-                value={formData.gstNumber}
-                onChange={(e) => setFormData({ ...formData, gstNumber: e.target.value })}
+                id="gst_no"
+                value={formData.gst_no}
+                onChange={(e) => setFormData({ ...formData, gst_no: e.target.value })}
                 placeholder="GST registration number"
               />
             </div>
@@ -103,47 +100,6 @@ const CustomerModal = ({ open, onClose, onSave }: CustomerModalProps) => {
               value={formData.address}
               onChange={(e) => setFormData({ ...formData, address: e.target.value })}
               placeholder="Complete address"
-              className="h-20"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label htmlFor="city">City</Label>
-              <Input
-                id="city"
-                value={formData.city}
-                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                placeholder="City"
-              />
-            </div>
-            <div>
-              <Label htmlFor="state">State</Label>
-              <Input
-                id="state"
-                value={formData.state}
-                onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                placeholder="State"
-              />
-            </div>
-            <div>
-              <Label htmlFor="pincode">Pincode</Label>
-              <Input
-                id="pincode"
-                value={formData.pincode}
-                onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
-                placeholder="Pincode"
-              />
-            </div>
-          </div>
-
-          <div>
-            <Label htmlFor="notes">Notes</Label>
-            <Textarea
-              id="notes"
-              value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              placeholder="Additional notes about customer..."
               className="h-20"
             />
           </div>

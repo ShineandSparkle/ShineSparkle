@@ -14,29 +14,27 @@ interface PaymentModalProps {
 
 const PaymentModal = ({ open, onClose, onSave }: PaymentModalProps) => {
   const [formData, setFormData] = useState({
-    invoiceNumber: "",
-    customerName: "",
+    customer_name: "",
     amount: "",
-    paymentMethod: "",
-    transactionId: "",
+    payment_method: "",
     notes: "",
-    paymentDate: new Date().toISOString().split('T')[0]
+    payment_date: new Date().toISOString().split('T')[0]
   });
 
   const handleSave = () => {
     onSave({
-      ...formData,
-      id: Date.now(),
-      amount: Number(formData.amount)
+      customer_name: formData.customer_name,
+      amount: Number(formData.amount),
+      payment_method: formData.payment_method,
+      payment_date: formData.payment_date,
+      notes: formData.notes || null
     });
     setFormData({
-      invoiceNumber: "",
-      customerName: "",
+      customer_name: "",
       amount: "",
-      paymentMethod: "",
-      transactionId: "",
+      payment_method: "",
       notes: "",
-      paymentDate: new Date().toISOString().split('T')[0]
+      payment_date: new Date().toISOString().split('T')[0]
     });
     onClose();
   };
@@ -50,21 +48,11 @@ const PaymentModal = ({ open, onClose, onSave }: PaymentModalProps) => {
         
         <div className="space-y-4">
           <div>
-            <Label htmlFor="invoiceNumber">Invoice Number</Label>
-            <Input
-              id="invoiceNumber"
-              value={formData.invoiceNumber}
-              onChange={(e) => setFormData({ ...formData, invoiceNumber: e.target.value })}
-              placeholder="INV-001"
-            />
-          </div>
-
-          <div>
             <Label htmlFor="customerName">Customer Name</Label>
             <Input
               id="customerName"
-              value={formData.customerName}
-              onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
+              value={formData.customer_name}
+              onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })}
               placeholder="Customer name"
             />
           </div>
@@ -82,7 +70,7 @@ const PaymentModal = ({ open, onClose, onSave }: PaymentModalProps) => {
 
           <div>
             <Label htmlFor="paymentMethod">Payment Method</Label>
-            <Select value={formData.paymentMethod} onValueChange={(value) => setFormData({ ...formData, paymentMethod: value })}>
+            <Select value={formData.payment_method} onValueChange={(value) => setFormData({ ...formData, payment_method: value })}>
               <SelectTrigger>
                 <SelectValue placeholder="Select payment method" />
               </SelectTrigger>
@@ -97,22 +85,12 @@ const PaymentModal = ({ open, onClose, onSave }: PaymentModalProps) => {
           </div>
 
           <div>
-            <Label htmlFor="transactionId">Transaction ID (Optional)</Label>
-            <Input
-              id="transactionId"
-              value={formData.transactionId}
-              onChange={(e) => setFormData({ ...formData, transactionId: e.target.value })}
-              placeholder="Transaction reference"
-            />
-          </div>
-
-          <div>
             <Label htmlFor="paymentDate">Payment Date</Label>
             <Input
               id="paymentDate"
               type="date"
-              value={formData.paymentDate}
-              onChange={(e) => setFormData({ ...formData, paymentDate: e.target.value })}
+              value={formData.payment_date}
+              onChange={(e) => setFormData({ ...formData, payment_date: e.target.value })}
             />
           </div>
 
