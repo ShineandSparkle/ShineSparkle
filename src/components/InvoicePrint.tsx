@@ -3,11 +3,12 @@ const printInvoice = (invoice: any) => {
     <!DOCTYPE html>
     <html>
     <head>
-      <title>Invoice #${invoice.id}</title>
+      <title>Invoice #${invoice.invoice_number}</title>
       <style>
         body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
         .invoice-container { max-width: 800px; margin: 0 auto; }
         .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; }
+        .logo { max-width: 100px; height: auto; margin-bottom: 10px; }
         .company-name { font-size: 24px; font-weight: bold; color: #333; }
         .invoice-details { display: flex; justify-content: space-between; margin-bottom: 30px; }
         .bill-to, .invoice-info { flex: 1; }
@@ -19,6 +20,10 @@ const printInvoice = (invoice: any) => {
         .total-row { display: flex; justify-content: space-between; padding: 5px 0; }
         .total-final { font-weight: bold; font-size: 18px; border-top: 2px solid #333; padding-top: 10px; }
         .notes { margin-top: 30px; padding: 15px; background-color: #f8f9fa; border-left: 4px solid #007bff; }
+        .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; }
+        .footer-business { font-weight: bold; font-size: 16px; margin-bottom: 10px; }
+        .footer-details { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
+        .footer-item { display: flex; align-items: center; gap: 5px; }
         @media print {
           body { margin: 0; }
           .no-print { display: none; }
@@ -28,6 +33,7 @@ const printInvoice = (invoice: any) => {
     <body>
       <div class="invoice-container">
         <div class="header">
+          <img src="/Logo.png" alt="Company Logo" class="logo" />
           <div class="company-name">SHINE & SPARKLE</div>
           <p>Professional Cleaning Solutions</p>
         </div>
@@ -35,17 +41,17 @@ const printInvoice = (invoice: any) => {
         <div class="invoice-details">
           <div class="bill-to">
             <h3>Bill To:</h3>
-            <p><strong>${invoice.customerName}</strong></p>
-            <p>${invoice.customerEmail || ''}</p>
-            <p>${invoice.customerPhone || ''}</p>
-            ${invoice.customerAddress ? `<p>${invoice.customerAddress}</p>` : ''}
-            ${invoice.customerGstNumber ? `<p>GST: ${invoice.customerGstNumber}</p>` : ''}
+            <p><strong>${invoice.customer_name || 'N/A'}</strong></p>
+            <p>${invoice.customer_email || ''}</p>
+            <p>${invoice.customer_phone || ''}</p>
+            ${invoice.customer_address ? `<p>${invoice.customer_address}</p>` : ''}
+            ${invoice.customer_gst_no ? `<p>GST: ${invoice.customer_gst_no}</p>` : ''}
           </div>
           <div class="invoice-info">
             <h3>Invoice Details:</h3>
-            <p><strong>Invoice #:</strong> INV-${String(invoice.id).padStart(3, '0')}</p>
-            <p><strong>Date:</strong> ${new Date(invoice.date).toLocaleDateString()}</p>
-            <p><strong>Due Date:</strong> ${new Date(new Date(invoice.date).getTime() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString()}</p>
+            <p><strong>Invoice #:</strong> ${invoice.invoice_number}</p>
+            <p><strong>Date:</strong> ${new Date(invoice.invoice_date).toLocaleDateString()}</p>
+            <p><strong>Due Date:</strong> ${invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : new Date(new Date(invoice.invoice_date).getTime() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString()}</p>
           </div>
         </div>
         
@@ -73,15 +79,15 @@ const printInvoice = (invoice: any) => {
         <div class="total-section">
           <div class="total-row">
             <span>Subtotal:</span>
-            <span>₹${(invoice.subtotal || invoice.amount || 0).toFixed(2)}</span>
+            <span>₹${(invoice.subtotal || 0).toFixed(2)}</span>
           </div>
           <div class="total-row">
-            <span>Tax (${invoice.taxRate || 18}%):</span>
-            <span>₹${(invoice.taxAmount || ((invoice.amount || 0) * (invoice.taxRate || 18) / 100)).toFixed(2)}</span>
+            <span>Tax (18%):</span>
+            <span>₹${(invoice.tax_amount || 0).toFixed(2)}</span>
           </div>
           <div class="total-row total-final">
             <span>Total:</span>
-            <span>₹${(invoice.total || invoice.amount || 0).toFixed(2)}</span>
+            <span>₹${(invoice.total_amount || 0).toFixed(2)}</span>
           </div>
         </div>
         
@@ -92,7 +98,25 @@ const printInvoice = (invoice: any) => {
           </div>
         ` : ''}
         
-        <div style="text-align: center; margin-top: 40px; color: #666;">
+        <div class="footer">
+          <div class="footer-business">SHINE & SPARKLE</div>
+          <div class="footer-details">
+            <div class="footer-item">
+              <span>📍</span>
+              <span>123 Business Street, City, State 12345</span>
+            </div>
+            <div class="footer-item">
+              <span>📞</span>
+              <span>+91 98765 43210</span>
+            </div>
+            <div class="footer-item">
+              <span>📧</span>
+              <span>info@shinesparkle.com</span>
+            </div>
+          </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px; color: #666;">
           <p>Thank you for your business!</p>
         </div>
       </div>
