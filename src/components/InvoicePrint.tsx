@@ -213,19 +213,46 @@ const printInvoice = (invoice: any) => {
           </div>
         ` : ''}
 
-        <div class="footer">
-          <div class="footer-business">SHINE & SPARKLE</div>
-          <div class="footer-details">
-            <div class="footer-item">
-              <span>📍</span><span>RK Residency, Ravalkole, Medchal</span>
-              <span>📞</span><span>+91 8500 60 6000</span>
-              <span>📧</span><span>support@shineandsparkle.com</span>
-            </div>
+      <div style="font-family: Arial, sans-serif; font-size: 14px; color: #444; width: 100%; margin-top: 40px;">
+        
+        <!-- Top separator -->
+        <hr style="width: 100%; border: none; border-top: 1px solid #ccc; margin: 10px 0;" />
+
+        <!-- Company Name -->
+        <div style="text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 6px;">
+          SHINE & SPARKLE
+        </div>
+
+        <!-- Contact Details in One Line -->
+        <div style="
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 30px;
+          flex-wrap: wrap;
+          font-size: 14px;
+          color: #333;
+        ">
+          <div style="display: flex; align-items: center; gap: 5px;">
+            <span>📍</span>
+            <span>RK Residency, Ravalkole, Medchal</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 5px;">
+            <span>📞</span>
+            <span>+91 8500 60 6000</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 5px;">
+            <span>📧</span>
+            <span>support@shineandsparkle.com</span>
           </div>
         </div>
 
-        <div style="text-align: center; margin-top: 20px; color: #666;">
-          <p>Thank you for your business!</p>
+        <!-- Bottom separator -->
+        <hr style="width: 100%; border: none; border-top: 1px solid #ccc; margin: 10px 0;" />
+
+        <!-- Disclaimer -->
+        <div style="text-align: center; font-size: 12px; color: #333;">
+          <strong>This is a</strong> computer-generated invoice and does not require a signature.
         </div>
       </div>
 
