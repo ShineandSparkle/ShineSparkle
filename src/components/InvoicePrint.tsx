@@ -82,7 +82,7 @@ const printInvoice = (invoice: any) => {
             <span>₹${(invoice.subtotal || 0).toFixed(2)}</span>
           </div>
           <div class="total-row">
-            <span>Tax (18%):</span>
+            <span>Tax (${invoice.tax_rate || 18}%):</span>
             <span>₹${(invoice.tax_amount || 0).toFixed(2)}</span>
           </div>
           <div class="total-row total-final">
