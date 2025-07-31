@@ -398,7 +398,7 @@ const Index = () => {
                       </Button>
                       <Button className="bg-green-600 hover:bg-green-700" onClick={handleRecordPayment}>
                         <Plus className="h-4 w-4 mr-2" />
-                        Record Payment
+                        Payments
                       </Button>
                     </div>
                   </div>
@@ -489,6 +489,7 @@ const Index = () => {
         open={paymentModalOpen} 
         onClose={() => setPaymentModalOpen(false)}
         onSave={handleSavePayment}
+        invoices={invoices}
       />
       <CustomerModal 
         open={customerModalOpen} 

@@ -24,7 +24,7 @@ const InvoiceModal = ({ open, onClose, invoice, customers, onSave }: InvoiceModa
     customer_address: "",
     customer_gst_no: "",
     items: [{ description: "", quantity: 1, rate: 0, amount: 0 }],
-    taxRate: 18,
+        taxRate: 0,
     notes: ""
   });
 
@@ -39,7 +39,7 @@ const InvoiceModal = ({ open, onClose, invoice, customers, onSave }: InvoiceModa
         customer_address: invoice.customer_address || "",
         customer_gst_no: invoice.customer_gst_no || "",
         items: invoice.items || [{ description: "", quantity: 1, rate: 0, amount: 0 }],
-        taxRate: invoice.tax_rate || 18,
+        taxRate: invoice.tax_rate || 0,
         notes: invoice.notes || ""
       });
     } else {
@@ -52,7 +52,7 @@ const InvoiceModal = ({ open, onClose, invoice, customers, onSave }: InvoiceModa
         customer_address: "",
         customer_gst_no: "",
         items: [{ description: "", quantity: 1, rate: 0, amount: 0 }],
-        taxRate: 18,
+        taxRate: 0,
         notes: ""
       });
     }
