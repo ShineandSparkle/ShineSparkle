@@ -17,16 +17,46 @@ interface InvoiceModalProps {
 
 const InvoiceModal = ({ open, onClose, invoice, customers, onSave }: InvoiceModalProps) => {
   const [formData, setFormData] = useState({
-    customer_id: invoice?.customer_id || "",
-    customer_name: invoice?.customer_name || "",
-    customer_email: invoice?.customer_email || "",
-    customer_phone: invoice?.customer_phone || "",
-    customer_address: invoice?.customer_address || "",
-    customer_gst_no: invoice?.customer_gst_no || "",
-    items: invoice?.items || [{ description: "", quantity: 1, rate: 0, amount: 0 }],
+    customer_id: "",
+    customer_name: "",
+    customer_email: "",
+    customer_phone: "",
+    customer_address: "",
+    customer_gst_no: "",
+    items: [{ description: "", quantity: 1, rate: 0, amount: 0 }],
     taxRate: 18,
-    notes: invoice?.notes || ""
+    notes: ""
   });
+
+  // Update form data when invoice prop changes
+  useEffect(() => {
+    if (invoice) {
+      setFormData({
+        customer_id: invoice.customer_id || "",
+        customer_name: invoice.customer_name || "",
+        customer_email: invoice.customer_email || "",
+        customer_phone: invoice.customer_phone || "",
+        customer_address: invoice.customer_address || "",
+        customer_gst_no: invoice.customer_gst_no || "",
+        items: invoice.items || [{ description: "", quantity: 1, rate: 0, amount: 0 }],
+        taxRate: invoice.tax_rate || 18,
+        notes: invoice.notes || ""
+      });
+    } else {
+      // Reset form for new invoice
+      setFormData({
+        customer_id: "",
+        customer_name: "",
+        customer_email: "",
+        customer_phone: "",
+        customer_address: "",
+        customer_gst_no: "",
+        items: [{ description: "", quantity: 1, rate: 0, amount: 0 }],
+        taxRate: 18,
+        notes: ""
+      });
+    }
+  }, [invoice, open]);
 
   const handleCustomerSelect = (customerId: string) => {
     const selectedCustomer = customers.find(c => c.id === customerId);
@@ -86,6 +116,7 @@ const InvoiceModal = ({ open, onClose, invoice, customers, onSave }: InvoiceModa
       customer_gst_no: formData.customer_gst_no || null,
       items: formData.items,
       subtotal: subtotal,
+      tax_rate: formData.taxRate,
       tax_amount: taxAmount,
       total_amount: total,
       status: 'Pending',
