@@ -200,12 +200,15 @@ const Index = () => {
         
         if (updateError) throw updateError;
         
-        // Update local invoices state
-        setInvoices(invoices.map(invoice => 
-          invoice.id === paymentData.invoice_id 
-            ? { ...invoice, status: 'Paid' }
-            : invoice
-        ));
+        // Refresh invoices data from database
+        const { data: updatedInvoices, error: fetchError } = await supabase
+          .from('invoices')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (!fetchError && updatedInvoices) {
+          setInvoices(updatedInvoices);
+        }
       }
       
       setPayments([data, ...payments]);
