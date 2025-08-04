@@ -18,11 +18,19 @@ import {
   Building,
   DollarSign,
   Package,
-  Calculator
+  Calculator,
+  Upload,
+  Download,
+  FileSpreadsheet,
+  FileText
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { getFormulationBySlug } from "@/data/formulations";
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
 
 const Formulations = () => {
   const navigate = useNavigate();
@@ -66,6 +74,154 @@ const Formulations = () => {
     navigate(`/formulation/${formulation.slug}`);
   };
 
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    
+    // Company header
+    doc.setFontSize(16);
+    doc.setFont(undefined, 'bold');
+    doc.text('SPARKLE & SHINE', 105, 20, { align: 'center' });
+    
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'normal');
+    doc.text('FLAT NO - 202, RK RESIDENCY, HARITHA ROYAL CITY COLONY, RAVALKOLE, MEDCHAL - 501401', 105, 30, { align: 'center' });
+    
+    // Get all formulations data
+    const allFormulationsData = formulations
+      .filter(f => f.id <= 12) // Only actual formulations, not pricing pages
+      .map(f => {
+        const formData = getFormulationBySlug(f.slug);
+        return formData ? { ...f, ...formData } : null;
+      })
+      .filter(Boolean);
+
+    let yPosition = 50;
+    
+    allFormulationsData.forEach((formulation, index) => {
+      if (index > 0) {
+        doc.addPage();
+        yPosition = 20;
+      }
+      
+      // Formulation name
+      doc.setFontSize(14);
+      doc.setFont(undefined, 'bold');
+      doc.text(formulation.name, 105, yPosition, { align: 'center' });
+      yPosition += 15;
+      
+      // Ingredients table
+      const tableData = formulation.ingredients?.map(ing => [
+        ing.slNo,
+        ing.particulars,
+        ing.uom,
+        ing.qty,
+        ing.rate,
+        ing.amount
+      ]) || [];
+      
+      autoTable(doc, {
+        startY: yPosition,
+        head: [['SL.NO', 'PARTICULARS', 'UOM', 'QTY', 'RATE', 'AMOUNT']],
+        body: tableData,
+        theme: 'grid',
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [100, 100, 100] }
+      });
+      
+      yPosition = (doc as any).lastAutoTable.finalY + 10;
+      
+      // Cost summary
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'bold');
+      doc.text(`Cost / Per 500 ML Bottle: ₹ ${formulation.costPer500ML?.toFixed(2) || '0.00'}`, 20, yPosition);
+      doc.text(`Cost / Per 1 Ltr Bottle: ₹ ${formulation.costPer1L?.toFixed(2) || '0.00'}`, 20, yPosition + 8);
+      doc.text(`Cost / Ltr: ₹ ${formulation.costPerLtr?.toFixed(2) || '0.00'}`, 150, yPosition + 8);
+      
+      yPosition += 25;
+      
+      // Method of preparation
+      if (formulation.methodOfPreparation?.length > 0) {
+        doc.setFontSize(12);
+        doc.setFont(undefined, 'bold');
+        doc.text('METHOD OF PREPARATION', 105, yPosition, { align: 'center' });
+        yPosition += 10;
+        
+        doc.setFontSize(9);
+        doc.setFont(undefined, 'normal');
+        formulation.methodOfPreparation.forEach((step, i) => {
+          doc.text(`${i + 1}. ${step}`, 20, yPosition);
+          yPosition += 6;
+        });
+      }
+    });
+    
+    doc.save('Formulations.pdf');
+  };
+
+  const exportToExcel = () => {
+    const workbook = XLSX.utils.book_new();
+    
+    // Get all formulations data
+    const allFormulationsData = formulations
+      .filter(f => f.id <= 12) // Only actual formulations, not pricing pages
+      .map(f => {
+        const formData = getFormulationBySlug(f.slug);
+        return formData ? { ...f, ...formData } : null;
+      })
+      .filter(Boolean);
+
+    allFormulationsData.forEach(formulation => {
+      const worksheetData = [
+        ['SPARKLE & SHINE'],
+        ['FLAT NO - 202, RK RESIDENCY, HARITHA ROYAL CITY COLONY, RAVALKOLE, MEDCHAL - 501401'],
+        [''],
+        [formulation.name],
+        [''],
+        ['SL.NO', 'PARTICULARS', 'UOM', 'QTY', 'RATE', 'AMOUNT'],
+        ...(formulation.ingredients?.map(ing => [
+          ing.slNo,
+          ing.particulars,
+          ing.uom,
+          ing.qty,
+          ing.rate,
+          ing.amount
+        ]) || []),
+        [''],
+        ['Cost / Per 500 ML Bottle', `₹ ${formulation.costPer500ML?.toFixed(2) || '0.00'}`],
+        ['Cost / Per 1 Ltr Bottle', `₹ ${formulation.costPer1L?.toFixed(2) || '0.00'}`, 'Cost / Ltr', `₹ ${formulation.costPerLtr?.toFixed(2) || '0.00'}`],
+        [''],
+        ['METHOD OF PREPARATION'],
+        ...(formulation.methodOfPreparation?.map((step, i) => [`${i + 1}`, step]) || [])
+      ];
+      
+      const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+      XLSX.utils.book_append_sheet(workbook, worksheet, formulation.name.substring(0, 30));
+    });
+    
+    XLSX.writeFile(workbook, 'Formulations.xlsx');
+  };
+
+  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = new Uint8Array(e.target?.result as ArrayBuffer);
+        const workbook = XLSX.read(data, { type: 'array' });
+        
+        // Process imported data here
+        console.log('Imported workbook:', workbook);
+        // You can implement the import logic based on your requirements
+        
+      } catch (error) {
+        console.error('Error importing file:', error);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <Header />
@@ -74,13 +230,43 @@ const Formulations = () => {
         <div className="max-w-7xl mx-auto">
           {/* Hero Section */}
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-slate-800 mb-4">
-              Professional Cleaning Formulations
-            </h2>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              Comprehensive cleaning formulation management system with detailed 
-              recipes, cost analysis, and manufacturing instructions
-            </p>
+            <div className="flex justify-between items-center mb-8">
+              <div></div>
+              <div className="text-center">
+                <h2 className="text-4xl font-bold text-slate-800 mb-4">
+                  Professional Cleaning Formulations
+                </h2>
+                <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+                  Comprehensive cleaning formulation management system with detailed 
+                  recipes, cost analysis, and manufacturing instructions
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="file"
+                  accept=".xlsx,.xls,.csv"
+                  onChange={handleImport}
+                  className="hidden"
+                  id="import-file"
+                />
+                <label htmlFor="import-file">
+                  <Button variant="outline" className="cursor-pointer" asChild>
+                    <div>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Import
+                    </div>
+                  </Button>
+                </label>
+                <Button variant="outline" onClick={exportToPDF}>
+                  <FileText className="h-4 w-4 mr-2" />
+                  Export PDF
+                </Button>
+                <Button variant="outline" onClick={exportToExcel}>
+                  <FileSpreadsheet className="h-4 w-4 mr-2" />
+                  Export Excel
+                </Button>
+              </div>
+            </div>
           </div>
 
           {/* Dashboard Grid - Changed from 5x3 to 3x5 */}
