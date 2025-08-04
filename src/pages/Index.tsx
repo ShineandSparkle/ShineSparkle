@@ -199,20 +199,35 @@ const Index = () => {
           .eq('id', paymentData.invoice_id);
         
         if (updateError) throw updateError;
-        
-        // Refresh invoices data from database
-        const { data: updatedInvoices, error: fetchError } = await supabase
-          .from('invoices')
-          .select('*')
-          .order('created_at', { ascending: false });
-        
-        if (!fetchError && updatedInvoices) {
-          setInvoices(updatedInvoices);
-        }
       }
       
-      setPayments([data, ...payments]);
+      // Close modal first
       setPaymentModalOpen(false);
+      
+      // Then refresh all data
+      await Promise.all([
+        // Refresh invoices
+        supabase
+          .from('invoices')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .then(({ data: updatedInvoices, error: fetchError }) => {
+            if (!fetchError && updatedInvoices) {
+              setInvoices(updatedInvoices);
+            }
+          }),
+        // Refresh payments
+        supabase
+          .from('payments')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .then(({ data: updatedPayments, error: fetchError }) => {
+            if (!fetchError && updatedPayments) {
+              setPayments(updatedPayments);
+            }
+          })
+      ]);
+      
       toast({
         title: "Success",
         description: "Payment recorded successfully",
