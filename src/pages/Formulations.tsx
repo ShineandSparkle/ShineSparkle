@@ -109,35 +109,96 @@ const Formulations = () => {
       doc.text(formulation.name, 105, yPosition, { align: 'center' });
       yPosition += 15;
       
-      // Ingredients table
+      // Calculate total cost from ingredients
+      const totalCost = formulation.ingredients?.reduce((sum, ing) => sum + parseFloat(ing.amount.toFixed(2)), 0) || 0;
+      const baseYield = formulation.baseYield || 10; // Default to 10 liters if not specified
+      
+      // Calculate costs per different volumes
+      const costPerLiter = totalCost / baseYield;
+      const costPer500ML = (costPerLiter * 0.5);
+      const costPer1L = costPerLiter;
+      const costPer5L = (costPerLiter * 5);
+      
+      // Bottle costs (assuming bottle costs from formulation data or default)
+      const bottle500MLCost = formulation.costPer500MLBottle || 10.55;
+      const bottle1LCost = formulation.costPer1LBottle || 0;
+      
+      const totalCostPer500MLBottle = costPer500ML + bottle500MLCost;
+      const totalCostPer1LBottle = costPer1L + bottle1LCost;
+      
+      // Ingredients table with properly formatted amounts
       const tableData = formulation.ingredients?.map(ing => [
         ing.slNo,
         ing.particulars,
         ing.uom,
-        ing.qty,
-        ing.rate,
-        ing.amount
+        parseFloat(ing.qty.toFixed(2)),
+        parseFloat(ing.rate.toFixed(2)),
+        parseFloat(ing.amount.toFixed(2))
       ]) || [];
+      
+      // Add empty rows to match the format (up to 10 rows)
+      while (tableData.length < 10) {
+        tableData.push(['', '', '', '', '', 0]);
+      }
       
       autoTable(doc, {
         startY: yPosition,
         head: [['SL.NO', 'PARTICULARS', 'UOM', 'QTY', 'RATE', 'AMOUNT']],
         body: tableData,
         theme: 'grid',
-        styles: { fontSize: 9 },
-        headStyles: { fillColor: [100, 100, 100] }
+        styles: { fontSize: 9, cellPadding: 2 },
+        headStyles: { fillColor: [100, 100, 100], textColor: 255, fontStyle: 'bold' },
+        columnStyles: {
+          0: { halign: 'center', cellWidth: 15 },
+          1: { cellWidth: 50 },
+          2: { halign: 'center', cellWidth: 20 },
+          3: { halign: 'center', cellWidth: 20 },
+          4: { halign: 'right', cellWidth: 25 },
+          5: { halign: 'right', cellWidth: 30 }
+        }
       });
       
-      yPosition = (doc as any).lastAutoTable.finalY + 10;
+      yPosition = (doc as any).lastAutoTable.finalY + 5;
       
-      // Cost summary
+      // Cost summary with proper currency symbol and formatting
       doc.setFontSize(10);
       doc.setFont(undefined, 'bold');
-      doc.text(`Cost / Per 500 ML Bottle: ₹ ${formulation.costPer500ML?.toFixed(2) || '0.00'}`, 20, yPosition);
-      doc.text(`Cost / Per 1 Ltr Bottle: ₹ ${formulation.costPer1L?.toFixed(2) || '0.00'}`, 20, yPosition + 8);
-      doc.text(`Cost / Ltr: ₹ ${formulation.costPerLtr?.toFixed(2) || '0.00'}`, 150, yPosition + 8);
       
-      yPosition += 25;
+      // Cost per bottle row
+      autoTable(doc, {
+        startY: yPosition,
+        body: [
+          ['Cost / Per 500 ML Bottle', `Rs ${totalCostPer500MLBottle.toFixed(2)}`, bottle500MLCost.toFixed(2), totalCost.toFixed(2)]
+        ],
+        theme: 'grid',
+        styles: { fontSize: 10, cellPadding: 2 },
+        columnStyles: {
+          0: { cellWidth: 80, fontStyle: 'bold' },
+          1: { cellWidth: 40, halign: 'center', fontStyle: 'bold' },
+          2: { cellWidth: 30, halign: 'center' },
+          3: { cellWidth: 30, halign: 'right' }
+        }
+      });
+      
+      yPosition = (doc as any).lastAutoTable.finalY + 2;
+      
+      // Cost per 1L bottle and cost per liter row
+      autoTable(doc, {
+        startY: yPosition,
+        body: [
+          ['Cost / Per 1 Ltr Bottle', `Rs ${totalCostPer1LBottle.toFixed(2)}`, 'Cost / Ltr', costPerLiter.toFixed(2)]
+        ],
+        theme: 'grid',
+        styles: { fontSize: 10, cellPadding: 2 },
+        columnStyles: {
+          0: { cellWidth: 80, fontStyle: 'bold' },
+          1: { cellWidth: 40, halign: 'center', fontStyle: 'bold' },
+          2: { cellWidth: 30, halign: 'center', fontStyle: 'bold' },
+          3: { cellWidth: 30, halign: 'right' }
+        }
+      });
+      
+      yPosition = (doc as any).lastAutoTable.finalY + 15;
       
       // Method of preparation
       if (formulation.methodOfPreparation?.length > 0) {
@@ -149,8 +210,9 @@ const Formulations = () => {
         doc.setFontSize(9);
         doc.setFont(undefined, 'normal');
         formulation.methodOfPreparation.forEach((step, i) => {
-          doc.text(`${i + 1}. ${step}`, 20, yPosition);
-          yPosition += 6;
+          const wrappedText = doc.splitTextToSize(`${i + 1}. ${step}`, 170);
+          doc.text(wrappedText, 20, yPosition);
+          yPosition += wrappedText.length * 5 + 2;
         });
       }
     });
@@ -171,6 +233,19 @@ const Formulations = () => {
       .filter(Boolean);
 
     allFormulationsData.forEach(formulation => {
+      // Calculate costs from ingredients
+      const totalCost = formulation.ingredients?.reduce((sum, ing) => sum + parseFloat(ing.amount.toFixed(2)), 0) || 0;
+      const baseYield = formulation.baseYield || 10;
+      const costPerLiter = totalCost / baseYield;
+      const costPer500ML = (costPerLiter * 0.5);
+      const costPer1L = costPerLiter;
+      
+      const bottle500MLCost = formulation.costPer500MLBottle || 10.55;
+      const bottle1LCost = formulation.costPer1LBottle || 0;
+      
+      const totalCostPer500MLBottle = costPer500ML + bottle500MLCost;
+      const totalCostPer1LBottle = costPer1L + bottle1LCost;
+      
       const worksheetData = [
         ['SPARKLE & SHINE'],
         ['FLAT NO - 202, RK RESIDENCY, HARITHA ROYAL CITY COLONY, RAVALKOLE, MEDCHAL - 501401'],
@@ -182,13 +257,15 @@ const Formulations = () => {
           ing.slNo,
           ing.particulars,
           ing.uom,
-          ing.qty,
-          ing.rate,
-          ing.amount
+          parseFloat(ing.qty.toFixed(2)),
+          parseFloat(ing.rate.toFixed(2)),
+          parseFloat(ing.amount.toFixed(2))
         ]) || []),
+        // Add empty rows to reach 10 total
+        ...Array(Math.max(0, 10 - (formulation.ingredients?.length || 0))).fill(['', '', '', '', '', 0]),
         [''],
-        ['Cost / Per 500 ML Bottle', `₹ ${formulation.costPer500ML?.toFixed(2) || '0.00'}`],
-        ['Cost / Per 1 Ltr Bottle', `₹ ${formulation.costPer1L?.toFixed(2) || '0.00'}`, 'Cost / Ltr', `₹ ${formulation.costPerLtr?.toFixed(2) || '0.00'}`],
+        ['Cost / Per 500 ML Bottle', `Rs ${totalCostPer500MLBottle.toFixed(2)}`, bottle500MLCost.toFixed(2), totalCost.toFixed(2)],
+        ['Cost / Per 1 Ltr Bottle', `Rs ${totalCostPer1LBottle.toFixed(2)}`, 'Cost / Ltr', costPerLiter.toFixed(2)],
         [''],
         ['METHOD OF PREPARATION'],
         ...(formulation.methodOfPreparation?.map((step, i) => [`${i + 1}`, step]) || [])
