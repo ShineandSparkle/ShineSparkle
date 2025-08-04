@@ -168,7 +168,7 @@ const Formulations = () => {
       autoTable(doc, {
         startY: yPosition,
         body: [
-          ['Cost / Per 500 ML Bottle', `Rs ${totalCostPer500MLBottle.toFixed(2)}`, bottle500MLCost.toFixed(2), totalCost.toFixed(2)]
+          ['Cost / Per 500 ML Bottle', `₹ ${totalCostPer500MLBottle.toFixed(2)}`, bottle500MLCost.toFixed(2), totalCost.toFixed(2)]
         ],
         theme: 'grid',
         styles: { fontSize: 10, cellPadding: 2 },
@@ -186,7 +186,7 @@ const Formulations = () => {
       autoTable(doc, {
         startY: yPosition,
         body: [
-          ['Cost / Per 1 Ltr Bottle', `Rs ${totalCostPer1LBottle.toFixed(2)}`, 'Cost / Ltr', costPerLiter.toFixed(2)]
+          ['Cost / Per 1 Ltr Bottle', `₹ ${totalCostPer1LBottle.toFixed(2)}`, 'Cost / Ltr', costPerLiter.toFixed(2)]
         ],
         theme: 'grid',
         styles: { fontSize: 10, cellPadding: 2 },
@@ -264,8 +264,8 @@ const Formulations = () => {
         // Add empty rows to reach 10 total
         ...Array(Math.max(0, 10 - (formulation.ingredients?.length || 0))).fill(['', '', '', '', '', 0]),
         [''],
-        ['Cost / Per 500 ML Bottle', `Rs ${totalCostPer500MLBottle.toFixed(2)}`, bottle500MLCost.toFixed(2), totalCost.toFixed(2)],
-        ['Cost / Per 1 Ltr Bottle', `Rs ${totalCostPer1LBottle.toFixed(2)}`, 'Cost / Ltr', costPerLiter.toFixed(2)],
+        ['Cost / Per 500 ML Bottle', `₹ ${totalCostPer500MLBottle.toFixed(2)}`, bottle500MLCost.toFixed(2), totalCost.toFixed(2)],
+        ['Cost / Per 1 Ltr Bottle', `₹ ${totalCostPer1LBottle.toFixed(2)}`, 'Cost / Ltr', costPerLiter.toFixed(2)],
         [''],
         ['METHOD OF PREPARATION'],
         ...(formulation.methodOfPreparation?.map((step, i) => [`${i + 1}`, step]) || [])
