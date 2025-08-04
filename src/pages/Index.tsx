@@ -191,6 +191,23 @@ const Index = () => {
       
       if (error) throw error;
       
+      // Update invoice status to "Paid" if payment is linked to an invoice
+      if (paymentData.invoice_id) {
+        const { error: updateError } = await supabase
+          .from('invoices')
+          .update({ status: 'Paid' })
+          .eq('id', paymentData.invoice_id);
+        
+        if (updateError) throw updateError;
+        
+        // Update local invoices state
+        setInvoices(invoices.map(invoice => 
+          invoice.id === paymentData.invoice_id 
+            ? { ...invoice, status: 'Paid' }
+            : invoice
+        ));
+      }
+      
       setPayments([data, ...payments]);
       setPaymentModalOpen(false);
       toast({
@@ -410,7 +427,9 @@ const Index = () => {
                         <CardContent className="p-6">
                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                              <div className="space-y-1">
-                               <h4 className="font-semibold text-slate-800">Payment #{payment.id.slice(-8)}</h4>
+                                <h4 className="font-semibold text-slate-800">
+                                  Payment #{payment.invoice_id ? invoices.find(inv => inv.id === payment.invoice_id)?.invoice_number || payment.id.slice(-8) : payment.id.slice(-8)}
+                                </h4>
                                <p className="text-sm text-slate-600">From: {payment.customer_name}</p>
                                <p className="text-sm text-slate-500">Method: {payment.payment_method}</p>
                              </div>

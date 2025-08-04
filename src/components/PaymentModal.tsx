@@ -23,9 +23,9 @@ const PaymentModal = ({ open, onClose, onSave, invoices }: PaymentModalProps) =>
     payment_date: new Date().toISOString().split('T')[0]
   });
 
-  // Get unpaid invoices
+  // Get unpaid invoices only
   const unpaidInvoices = invoices.filter(invoice => 
-    invoice.status === 'Pending' || invoice.status === 'Overdue'
+    invoice.status !== 'Paid'
   );
 
   const handleInvoiceSelect = (invoiceId: string) => {
