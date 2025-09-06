@@ -21,7 +21,7 @@ const Header = () => {
           </Link>
           <nav className="hidden md:flex space-x-4">
             <Link
-              to="/"
+              to="/invoice"
               className="bg-white text-blue-600 font-semibold py-2 px-4 rounded-lg shadow hover:bg-blue-100 transition-colors"
             >
               Invoice System

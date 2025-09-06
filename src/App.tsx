@@ -24,6 +24,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Formulations />} />
+          <Route path="/invoice" element={<Index />} />
           <Route path="/formulations" element={<Formulations />} />
           <Route path="/formulation/:slug" element={<FormulationDetail />} />
           <Route path="/product-prices" element={<ProductPrices />} />
