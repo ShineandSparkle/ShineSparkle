@@ -1,14 +1,21 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calculator } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Calculator, Edit3, RotateCcw } from "lucide-react";
 import { FormulationData } from "@/data/types";
+import { useState } from "react";
 
 interface CostSummaryProps {
   formulation: FormulationData;
 }
 
 const CostSummary = ({ formulation }: CostSummaryProps) => {
-  const totalQuantity = formulation.ingredients.reduce((sum, ingredient) => sum + ingredient.qty, 0);
+  const autoCalculatedQuantity = formulation.ingredients.reduce((sum, ingredient) => sum + ingredient.qty, 0);
+  const [isManualQuantity, setIsManualQuantity] = useState(false);
+  const [manualQuantity, setManualQuantity] = useState(formulation.manualTotalQuantity || autoCalculatedQuantity);
+  
+  const totalQuantity = isManualQuantity ? manualQuantity : autoCalculatedQuantity;
   const totalAmount = formulation.ingredients.reduce((sum, ingredient) => sum + ingredient.amount, 0);
 
   // Auto-calculate cost per litre from total amount and base yield
@@ -40,9 +47,40 @@ const CostSummary = ({ formulation }: CostSummaryProps) => {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-3">
-          <div className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
-            <span className="font-medium">Total Quantity:</span>
-            <span className="font-bold">{totalQuantity.toFixed(2)} L</span>
+          <div className="p-3 bg-slate-50 rounded-lg space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="font-medium">Total Quantity:</span>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setIsManualQuantity(!isManualQuantity);
+                    if (!isManualQuantity) {
+                      setManualQuantity(autoCalculatedQuantity);
+                    }
+                  }}
+                  className="h-6 px-2"
+                >
+                  {isManualQuantity ? <RotateCcw className="h-3 w-3" /> : <Edit3 className="h-3 w-3" />}
+                </Button>
+              </div>
+            </div>
+            {isManualQuantity ? (
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  value={manualQuantity}
+                  onChange={(e) => setManualQuantity(parseFloat(e.target.value) || 0)}
+                  className="w-24 h-8 text-sm"
+                  step="0.01"
+                />
+                <span className="text-sm">L</span>
+                <span className="text-xs text-muted-foreground">(Auto: {autoCalculatedQuantity.toFixed(2)} L)</span>
+              </div>
+            ) : (
+              <div className="font-bold">{totalQuantity.toFixed(2)} L</div>
+            )}
           </div>
           
           <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">

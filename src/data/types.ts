@@ -16,6 +16,7 @@ export interface FormulationData {
   description: string;
   ingredients: Ingredient[];
   baseYield: number; // Base yield for the formulation
+  manualTotalQuantity?: number; // Optional manual override for total quantity
   costPer500ML: number;
   costPer1L: number;
   costPer5L: number;
