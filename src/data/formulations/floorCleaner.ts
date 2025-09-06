@@ -15,7 +15,6 @@ export const floorCleaningFormulation: FormulationData = {
     { slNo: 4, particulars: "Color", uom: "LTR", qty: 0.05, rate: 400, amount: 0.05 * 400 },
     { slNo: 5, particulars: "Perfume", uom: "LTR", qty: 0.05, rate: 1000, amount: 0.05 * 1000 }
   ],
-  costPerLtr: 22.59,
   costPer500ML: 0, // Auto-calculated
   costPer1L: 0, // Auto-calculated
   costPer5L: 0, // Auto-calculated

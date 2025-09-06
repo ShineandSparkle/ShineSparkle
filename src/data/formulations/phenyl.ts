@@ -15,7 +15,6 @@ export const phenylFormulation: FormulationData = {
     { slNo: 4, particulars: "Perfume", uom: "LTR", qty: 0.03, rate: 1000, amount: 0.03 * 1000 },
     { slNo: 5, particulars: "Alphox 200", uom: "LTR", qty: 0.03, rate: 240, amount: 0.03 * 240 }
   ],
-  costPerLtr: 20.22,
   costPer500ML: 0, // Auto-calculated
   costPer1L: 0, // Auto-calculated
   costPer5L: 0, // Auto-calculated

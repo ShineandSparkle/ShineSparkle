@@ -20,7 +20,6 @@ export const dishWashFormulation: FormulationData = {
     { slNo: 9, particulars: "Colour", uom: "LTR", qty: 0.025, rate: 400, amount: 0.025 * 400 },
     { slNo: 10, particulars: "Perfume", uom: "LTR", qty: 0.04, rate: 1000, amount: 0.04 * 1000 }
   ],
-  costPerLtr: 33.14,
   costPer500ML: 0, // Auto-calculated
   costPer1L: 0, // Auto-calculated
   costPer5L: 0, // Auto-calculated

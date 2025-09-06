@@ -20,7 +20,6 @@ export const liquidDetergentFormulation: FormulationData = {
     { slNo: 9, particulars: "Aplhox", uom: "LTR", qty: 0.04, rate: 240, amount: 0.04 * 240 },    
     { slNo: 10, particulars: "Perfume", uom: "LTR", qty: 0.04, rate: 1000, amount: 0.04 * 1000 }
   ],
-  costPerLtr: 32.80,
   costPer500ML: 0, // Auto-calculated
   costPer1L: 0, // Auto-calculated
   costPer5L: 0, // Auto-calculated

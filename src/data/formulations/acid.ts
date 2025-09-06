@@ -11,7 +11,6 @@ export const acidFormulation: FormulationData = {
   ingredients: [
     { slNo: 1, particulars: "Hydrochloric Acid", uom: "LTR", qty: 10.0, rate: 20, amount: 10 * 20 },  
   ],
-  costPerLtr: 20.00,
   costPer500ML: 0, // Auto-calculated
   costPer1L: 0, // Auto-calculated
   costPer5L: 0, // Auto-calculated

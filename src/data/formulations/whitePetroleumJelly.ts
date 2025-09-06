@@ -13,7 +13,6 @@ export const whitePetroleumJellyFormulation: FormulationData = {
 { slNo: 2, particulars: "Vitamin E", uom: "KGS", qty: 0.1, rate: 2000, amount: 0.1 * 2000 },
 { slNo: 3, particulars: "Antioxidant", uom: "KGS", qty: 0.1, rate: 500, amount: 0.1 * 500 }
   ],
-  costPerLtr: 30.93,
   costPer500ML: 0, // Auto-calculated
   costPer1L: 0, // Auto-calculated  
   costPer5L: 0, // Auto-calculated

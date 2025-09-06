@@ -14,7 +14,6 @@ export const toiletCleanerFormulation: FormulationData = {
     { slNo: 3, particulars: "HCL Acid", uom: "LTR", qty: 2.0, rate: 16, amount: 2.0 * 16 },
     { slNo: 4, particulars: "Color", uom: "LTR", qty: 0.001, rate: 5000, amount: 0.001 * 5000 }
   ],
-  costPerLtr: 13.75,
   costPer500ML: 0, // Auto-calculated
   costPer1L: 0, // Auto-calculated  
   costPer5L: 0, // Auto-calculated

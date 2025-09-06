@@ -15,7 +15,6 @@ export const brassCleaningFormulation: FormulationData = {
     { slNo: 4, particulars: "SLES", uom: "KGS", qty: 2.5, rate: 100, amount: 1.5 * 100 },
     { slNo: 5, particulars: "Colour", uom: "LTR", qty: 0.05, rate: 400, amount: 0.05 * 400 }
   ],
-  costPerLtr: 34.45,
   costPer500ML: 0, // Auto-calculated
   costPer1L: 0, // Auto-calculated
   costPer5L: 0, // Auto-calculated

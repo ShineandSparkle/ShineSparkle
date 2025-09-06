@@ -15,7 +15,6 @@ export const painReliefBalmFormulation: FormulationData = {
 { slNo: 4, particulars: "Eucalyptus Oil", uom: "LTR", qty: 0.5, rate: 600, amount: 0.5 * 600 },
 { slNo: 5, particulars: "Wintergreen Oil", uom: "LTR", qty: 0.5, rate: 500, amount: 0.5 * 500 }
   ],
-  costPerLtr: 30.93,
   costPer500ML: 0, // Auto-calculated
   costPer1L: 0, // Auto-calculated  
   costPer5L: 0, // Auto-calculated

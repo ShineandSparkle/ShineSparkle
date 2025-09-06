@@ -17,7 +17,6 @@ export const handWashFormulation: FormulationData = {
 { slNo: 6, particulars: "Color", uom: "LTR", qty: 0.03, rate: 400, amount: 0.03 * 400 },
 { slNo: 7, particulars: "Perfume", uom: "LTR", qty: 0.03, rate: 1000, amount: 0.03 * 1000 }
   ],
-  costPerLtr: 30.93,
   costPer500ML: 0, // Auto-calculated
   costPer1L: 0, // Auto-calculated  
   costPer5L: 0, // Auto-calculated

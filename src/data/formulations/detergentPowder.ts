@@ -16,10 +16,9 @@ export const detergentPowderFormulation: FormulationData = {
 { slNo: 5, particulars: "Perfume", uom: "KGS", qty: 0.1, rate: 1200, amount: 0.1 * 1200 }
   ],
   costPer500ML: 30.00,
-  costPer500MLBottle: 32.50,
   costPer1L: 65.00,
   costPer5L: 325.00,
-  costPerLtr: 60.00,
+  costPer500MLBottle: 32.50,
   costPer1LBottle: 6.00,
   costPer5LBottle: 21.00,
   methodOfPreparation: [

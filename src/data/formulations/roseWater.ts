@@ -12,7 +12,6 @@ export const roseWaterFormulation: FormulationData = {
     { slNo: 1, particulars: "RO Water", uom: "LTR", qty: 9.0, rate: 0.5, amount: 9.0 * 0.5 },
     { slNo: 2, particulars: "Rose Extract", uom: "LTR", qty: 0.1, rate: 1000, amount: 0.1 * 1000 }
   ],
-  costPerLtr: 23.55,
   costPer500ML: 0, // Auto-calculated
   costPer1L: 0, // Auto-calculated  
   costPer5L: 0, // Auto-calculated
