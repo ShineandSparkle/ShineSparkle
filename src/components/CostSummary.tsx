@@ -11,10 +11,13 @@ const CostSummary = ({ formulation }: CostSummaryProps) => {
   const totalQuantity = formulation.ingredients.reduce((sum, ingredient) => sum + ingredient.qty, 0);
   const totalAmount = formulation.ingredients.reduce((sum, ingredient) => sum + ingredient.amount, 0);
 
-  // Auto-calculate product costs from costPerLtr
-  const calculatedCostPer500ML = (formulation.costPerLtr * 0.5);
-  const calculatedCostPer1L = formulation.costPerLtr;
-  const calculatedCostPer5L = (formulation.costPerLtr * 5);
+  // Auto-calculate cost per litre from total amount and base yield
+  const calculatedCostPerLtr = totalAmount / formulation.baseYield;
+
+  // Auto-calculate product costs from calculated costPerLtr
+  const calculatedCostPer500ML = (calculatedCostPerLtr * 0.5);
+  const calculatedCostPer1L = calculatedCostPerLtr;
+  const calculatedCostPer5L = (calculatedCostPerLtr * 5);
 
   // Calculate combined product + bottle costs
   const totalCostPer500ML = calculatedCostPer500ML + (formulation.costPer500MLBottle || 0);
@@ -49,7 +52,7 @@ const CostSummary = ({ formulation }: CostSummaryProps) => {
           
           <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
             <span className="font-medium">Cost per Litre:</span>
-            <span className="font-bold text-green-600">₹{formulation.costPerLtr.toFixed(2)}</span>
+            <span className="font-bold text-green-600">₹{calculatedCostPerLtr.toFixed(2)}</span>
           </div>
 
           {/* Show auto-calculated product costs only if bottle costs exist */}
