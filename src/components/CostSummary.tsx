@@ -12,8 +12,8 @@ const CostSummary = ({ formulation }: CostSummaryProps) => {
   const totalQuantity = formulation.TotalQuantity || autoCalculatedQuantity;
   const totalAmount = formulation.ingredients.reduce((sum, ingredient) => sum + ingredient.amount, 0);
 
-  // Auto-calculate cost per litre from total amount and base yield
-  const calculatedCostPerLtr = totalAmount / formulation.baseYield;
+  // Auto-calculate cost per litre from total amount and total quantity
+  const calculatedCostPerLtr = totalAmount / totalQuantity;
 
   // Auto-calculate product costs from calculated costPerLtr
   const calculatedCostPer500ML = (calculatedCostPerLtr * 0.5);
