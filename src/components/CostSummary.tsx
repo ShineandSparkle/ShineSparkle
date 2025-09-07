@@ -82,28 +82,6 @@ const CostSummary = ({ formulation }: CostSummaryProps) => {
               </div>
               
               <div className="border-t pt-3 space-y-2">
-                <h4 className="font-semibold text-slate-700">Total Cost (Product + Bottle):</h4>
-                {has500MLBottle && (
-                  <div className="flex justify-between items-center p-2 bg-yellow-50 rounded">
-                    <span className="text-sm">500 ML {formulation.name}:</span>
-                    <span className="font-semibold text-yellow-600">₹{totalCostPer500ML.toFixed(2)}</span>
-                  </div>
-                )}
-                {has1LBottle && (
-                  <div className="flex justify-between items-center p-2 bg-orange-50 rounded">
-                    <span className="text-sm">1 Litre {formulation.name}:</span>
-                    <span className="font-semibold text-orange-600">₹{totalCostPer1L.toFixed(2)}</span>
-                  </div>
-                )}
-                {has5LBottle && (
-                  <div className="flex justify-between items-center p-2 bg-purple-50 rounded">
-                    <span className="text-sm">5 Litre {formulation.name}:</span>
-                    <span className="font-semibold text-purple-600">₹{totalCostPer5L.toFixed(2)}</span>
-                  </div>
-                )}
-              </div>
-              
-              <div className="border-t pt-3 space-y-2">
                 <h4 className="font-semibold text-slate-700">Bottle Cost:</h4>
                 {has500MLBottle && (
                   <div className="flex justify-between items-center p-2 bg-rose-50 rounded">
@@ -121,6 +99,28 @@ const CostSummary = ({ formulation }: CostSummaryProps) => {
                   <div className="flex justify-between items-center p-2 bg-violet-50 rounded">
                     <span className="text-sm">5 Litre Bottle:</span>
                     <span className="font-semibold text-violet-600">₹{formulation.costPer5LBottle!.toFixed(2)}</span>
+                  </div>
+                )}
+              </div>
+              
+              <div className="border-t pt-3 space-y-2">
+                <h4 className="font-semibold text-slate-700">Total Cost (Product + Bottle):</h4>
+                {has500MLBottle && (
+                  <div className="flex justify-between items-center p-2 bg-yellow-50 rounded">
+                    <span className="text-sm">500 ML {formulation.name}:</span>
+                    <span className="font-semibold text-yellow-600">₹{totalCostPer500ML.toFixed(2)}</span>
+                  </div>
+                )}
+                {has1LBottle && (
+                  <div className="flex justify-between items-center p-2 bg-orange-50 rounded">
+                    <span className="text-sm">1 Litre {formulation.name}:</span>
+                    <span className="font-semibold text-orange-600">₹{totalCostPer1L.toFixed(2)}</span>
+                  </div>
+                )}
+                {has5LBottle && (
+                  <div className="flex justify-between items-center p-2 bg-purple-50 rounded">
+                    <span className="text-sm">5 Litre {formulation.name}:</span>
+                    <span className="font-semibold text-purple-600">₹{totalCostPer5L.toFixed(2)}</span>
                   </div>
                 )}
               </div>
