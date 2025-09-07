@@ -7,11 +7,11 @@ export const roseWaterFormulation: FormulationData = {
   slug: "rose-water",
   category: "Personal Care",
   description: "Pure rose water for skincare and aromatherapy",
-  baseYield: 10.00, // Total quantity from ingredients
+  baseYield: 5.00, // Total quantity from ingredients
   TotalQuantity: undefined, // Set to override auto-calculated quantity (e.g., 9.1)
   ingredients: [
-    { slNo: 1, particulars: "RO Water", uom: "LTR", qty: 9.0, rate: 0.5, amount: 9.0 * 0.5 },
-    { slNo: 2, particulars: "Rose Extract", uom: "LTR", qty: 0.1, rate: 1000, amount: 0.1 * 1000 }
+    { slNo: 1, particulars: "RO Water", uom: "LTR", qty: 5.0, rate: 0.5, amount: 5.0 * 0.5 },
+    { slNo: 2, particulars: "Rose Extract", uom: "LTR", qty: 0.025, rate: 1000, amount: 0.025 * 1000 }
   ],
   costPer500ML: 0, // Auto-calculated
   costPer1L: 0, // Auto-calculated  
