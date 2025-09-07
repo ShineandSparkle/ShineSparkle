@@ -8,7 +8,7 @@ export const acidFormulation: FormulationData = {
   category: "Industrial Cleaners",
   description: "General purpose acid cleaner for heavy-duty cleaning",
   baseYield: 10.00, // Total quantity from ingredients
-  manualTotalQuantity: undefined, // Set to override auto-calculated quantity (e.g., 10.5)
+  TotalQuantity: undefined, // Set to override auto-calculated quantity (e.g., 10.5)
   ingredients: [
     { slNo: 1, particulars: "Hydrochloric Acid", uom: "LTR", qty: 10.0, rate: 20, amount: 10 * 20 },  
   ],

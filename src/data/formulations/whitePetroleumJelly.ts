@@ -8,7 +8,7 @@ export const whitePetroleumJellyFormulation: FormulationData = {
   category: "Personal Care",
   description: "Pure white petroleum jelly similar to Vaseline",
   baseYield: 10.0, // Total quantity from ingredients
-  manualTotalQuantity: undefined, // Set to override auto-calculated quantity (e.g., 10.0)
+  TotalQuantity: undefined, // Set to override auto-calculated quantity (e.g., 10.0)
   ingredients: [
 { slNo: 1, particulars: "White Petroleum Jelly Base", uom: "KGS", qty: 9.8, rate: 120, amount: 9.8 * 120 },
 { slNo: 2, particulars: "Vitamin E", uom: "KGS", qty: 0.1, rate: 2000, amount: 0.1 * 2000 },

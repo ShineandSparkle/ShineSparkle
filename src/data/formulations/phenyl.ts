@@ -8,7 +8,7 @@ export const phenylFormulation: FormulationData = {
   category: "Household Cleaners",
   description: "Multi-surface phenyl cleaning formulation with excellent disinfecting properties",
   baseYield: 10.00, // Total quantity from ingredients
-  manualTotalQuantity: undefined, // Set to override auto-calculated quantity (e.g., 10.09)
+  TotalQuantity: undefined, // Set to override auto-calculated quantity (e.g., 10.09)
   ingredients: [
     { slNo: 1, particulars: "RO Water", uom: "LTR", qty: 10, rate: 0.5, amount: 10 * 0.5 },
     { slNo: 2, particulars: "Phenyl Concentrate", uom: "KGS", qty: 1.0, rate: 180, amount: 1.0 * 180 },

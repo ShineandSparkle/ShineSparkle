@@ -8,7 +8,7 @@ export const painReliefBalmFormulation: FormulationData = {
   category: "Personal Care",
   description: "Herbal pain relief balm similar to Zandu Balm",
   baseYield: 10.0, // Total quantity from ingredients
-  manualTotalQuantity: undefined, // Set to override auto-calculated quantity (e.g., 10.0)
+  TotalQuantity: undefined, // Set to override auto-calculated quantity (e.g., 10.0)
   ingredients: [
 { slNo: 1, particulars: "White Petroleum Jelly", uom: "KGS", qty: 7.0, rate: 120, amount: 7.0 * 120 },
 { slNo: 2, particulars: "Menthol", uom: "KGS", qty: 1.0, rate: 800, amount: 1.0 * 800 },

@@ -8,7 +8,7 @@ export const toiletCleanerFormulation: FormulationData = {
   category: "Bathroom Cleaners",
   description: "Powerful toilet cleaning formulation with acid-based formula",
   baseYield: 10, // Total quantity from ingredients
-  manualTotalQuantity: undefined, // Set to override auto-calculated quantity (e.g., 10.251)
+  TotalQuantity: undefined, // Set to override auto-calculated quantity (e.g., 10.251)
   ingredients: [
     { slNo: 1, particulars: "RO Water", uom: "LTR", qty: 8.0, rate: 0.5, amount: 8.0 * 0.5 },
     { slNo: 2, particulars: "Acid Thickener", uom: "KGS", qty: 0.25, rate: 400, amount: 0.25 * 400 },

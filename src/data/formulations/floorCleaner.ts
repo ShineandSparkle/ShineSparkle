@@ -8,7 +8,7 @@ export const floorCleaningFormulation: FormulationData = {
   category: "Household Cleaners",
   description: "All-purpose floor cleaner with pleasant fragrance",
   baseYield: 10, // Total quantity from ingredients
-  manualTotalQuantity: undefined, // Set to override auto-calculated quantity (e.g., 10.1)
+  TotalQuantity: undefined, // Set to override auto-calculated quantity (e.g., 10.1)
   ingredients: [
     { slNo: 1, particulars: "RO Water", uom: "LTR", qty: 8.5, rate: 0.5, amount: 8.5 * 0.5 },
     { slNo: 2, particulars: "BKC", uom: "LTR", qty: 0.5, rate: 150, amount: 0.5 * 150 },

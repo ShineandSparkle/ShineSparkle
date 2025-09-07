@@ -8,7 +8,7 @@ export const detergentPowderFormulation: FormulationData = {
   category: "Laundry Care",
   description: "High-efficiency detergent powder for all fabrics",
   baseYield: 8.2, // Total quantity from ingredients
-  manualTotalQuantity: undefined, // Set to override auto-calculated quantity (e.g., 8.2)
+  TotalQuantity: undefined, // Set to override auto-calculated quantity (e.g., 8.2)
   ingredients: [
 { slNo: 1, particulars: "Soda Ash", uom: "KGS", qty: 3.0, rate: 25, amount: 3.0 * 25 },
 { slNo: 2, particulars: "Linear Alkyl Benzene", uom: "KGS", qty: 2.0, rate: 180, amount: 2.0 * 180 },
