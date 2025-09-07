@@ -8,6 +8,7 @@ export const dishWashFormulation: FormulationData = {
   category: "Kitchen Cleaners",
   description: "Effective dishwashing liquid with grease cutting formula",
   baseYield: 10.00, // Total quantity from ingredients
+  manualTotalQuantity: undefined, // Set to override auto-calculated quantity (e.g., 12.9)
   ingredients: [
     { slNo: 1, particulars: "RO Water", uom: "LTR", qty: 10.5, rate: 0.5, amount: 10.5 * 0.5 },
     { slNo: 2, particulars: "Slurry", uom: "KGS", qty: 1.0, rate: 180, amount: 1.0 * 180 },

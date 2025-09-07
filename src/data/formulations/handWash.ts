@@ -8,6 +8,7 @@ export const handWashFormulation: FormulationData = {
   category: "Personal Care",
   description: "Gentle hand washing liquid with moisturizing properties",
   baseYield: 10.00, // Total quantity from ingredients
+  manualTotalQuantity: undefined, // Set to override auto-calculated quantity (e.g., 13.16)
   ingredients: [
 { slNo: 1, particulars: "RO Water", uom: "LTR", qty: 10.0, rate: 0.5, amount: 10.0 * 0.5 },
 { slNo: 2, particulars: "Handwash Base - Pearl", uom: "LTR", qty: 1.0, rate: 200, amount: 1.0 * 200 },
