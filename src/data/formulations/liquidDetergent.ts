@@ -14,7 +14,7 @@ export const liquidDetergentFormulation: FormulationData = {
     { slNo: 2, particulars: "Slurry", uom: "KGS", qty: 1.25, rate: 180, amount: 1.25 * 180 },
     { slNo: 3, particulars: "SLES", uom: "KGS", qty: 0.4, rate: 100, amount: 0.4 * 100 },
     { slNo: 4, particulars: "Citric Acid", uom: "LTR", qty: 0.05, rate: 150, amount: 0.05 * 150 },
-    { slNo: 5, particulars: "Caustic Soda", uom: "KGS", qty: 0.2, rate: 80, amount: 0.2 * 80 },        
+    { slNo: 5, particulars: "Caustic Soda", uom: "KGS", qty: 0.025, rate: 80, amount: 0.025 * 80 },        
     { slNo: 6, particulars: "Tinopal", uom: "KGS", qty: 0.005, rate: 220, amount: 0.005 * 220 },
     { slNo: 7, particulars: "Sodium Benzoate", uom: "KGS", qty: 0.005, rate: 280, amount: 0.005 * 280 },
     { slNo: 8, particulars: "Colour", uom: "LTR", qty: 0.03, rate: 400, amount: 0.03 * 400 },
