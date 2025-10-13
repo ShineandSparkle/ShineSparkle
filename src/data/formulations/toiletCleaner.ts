@@ -10,10 +10,10 @@ export const toiletCleanerFormulation: FormulationData = {
   baseYield: 10, // Total quantity from ingredients
   TotalQuantity: undefined, // Set to override auto-calculated quantity (e.g., 10.251)
   ingredients: [
-    { slNo: 1, particulars: "RO Water", uom: "LTR", qty: 8.0, rate: 0.5, amount: 8.0 * 0.5 },
-    { slNo: 2, particulars: "Acid Thickener", uom: "KGS", qty: 0.25, rate: 400, amount: 0.25 * 400 },
-    { slNo: 3, particulars: "HCL Acid", uom: "LTR", qty: 2.0, rate: 16, amount: 2.0 * 16 },
-    { slNo: 4, particulars: "Color", uom: "LTR", qty: 0.001, rate: 5000, amount: 0.001 * 5000 }
+    { slNo: 1, particulars: "Acid Thickener", uom: "KGS", qty: 0.25, rate: 400, amount: 0.25 * 400 },
+    { slNo: 2, particulars: "HCL Acid", uom: "LTR", qty: 2.0, rate: 16, amount: 2.0 * 16 },
+    { slNo: 3, particulars: "Color", uom: "LTR", qty: 0.001, rate: 5000, amount: 0.001 * 5000 },
+    { slNo: 4, particulars: "RO Water", uom: "LTR", qty: 8.0, rate: 0.5, amount: 8.0 * 0.5 }
   ],
   costPer500ML: 0, // Auto-calculated
   costPer1L: 0, // Auto-calculated  

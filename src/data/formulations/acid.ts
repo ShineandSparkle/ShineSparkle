@@ -10,7 +10,7 @@ export const acidFormulation: FormulationData = {
   baseYield: 10.00, // Total quantity from ingredients
   TotalQuantity: undefined, // Set to override auto-calculated quantity (e.g., 10.5)
   ingredients: [
-    { slNo: 1, particulars: "Hydrochloric Acid", uom: "LTR", qty: 10.0, rate: 20, amount: 10 * 20 },  
+    { slNo: 1, particulars: "Hydrochloric Acid", uom: "LTR", qty: 10.0, rate: 20, amount: 10 * 20 }
   ],
   costPer500ML: 0, // Auto-calculated
   costPer1L: 0, // Auto-calculated

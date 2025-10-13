@@ -10,8 +10,7 @@ export const painReliefBalmFormulation: FormulationData = {
   baseYield: 0.250, // Total quantity from ingredients
   TotalQuantity: undefined, // Set to override auto-calculated quantity (e.g., 10.0)
   ingredients: [
-{ slNo: 1, particulars: "Balm Pack", uom: "KGS", qty: 0.25, rate: 880, amount: 0.25 * 880 }
-
+    { slNo: 1, particulars: "Balm Pack", uom: "KGS", qty: 0.25, rate: 880, amount: 0.25 * 880 }
   ],
   costPer500ML: 0, // Auto-calculated
   costPer1L: 0, // Auto-calculated  

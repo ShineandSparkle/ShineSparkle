@@ -153,8 +153,8 @@ const IndentSheet = () => {
                       <TableCell className="font-medium">{ingredient.particulars}</TableCell>
                       <TableCell>{ingredient.uom}</TableCell>
                       <TableCell className="text-right">{formatNumber(ingredient.totalQty)}</TableCell>
-                      <TableCell className="text-right">₹{formatNumber(ingredient.rate)}</TableCell>
-                      <TableCell className="text-right font-semibold">₹{formatNumber(ingredient.totalAmount)}</TableCell>
+                      <TableCell className="text-right">₹{ingredient.rate.toFixed(2)}</TableCell>
+                      <TableCell className="text-right font-semibold">₹{ingredient.totalAmount.toFixed(2)}</TableCell>
                     </TableRow>
                   ))}
                   <TableRow className="bg-slate-100 font-bold">
