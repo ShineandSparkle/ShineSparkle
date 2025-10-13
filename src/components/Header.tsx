@@ -32,6 +32,12 @@ const Header = () => {
             >
               Formulations
             </Link>
+            <Link
+              to="/indent-sheet"
+              className="bg-white text-blue-600 font-semibold py-2 px-4 rounded-lg shadow hover:bg-blue-100 transition-colors"
+            >
+              Indent Sheet
+            </Link>
           </nav>
         </div>
       </div>

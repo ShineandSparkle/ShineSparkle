@@ -10,6 +10,7 @@ import FormulationDetail from "./pages/FormulationDetail";
 import ProductPrices from "./pages/ProductPrices";
 import PackingMaterials from "./pages/PackingMaterials";
 import ChemicalPrices from "./pages/ChemicalPrices";
+import IndentSheet from "./pages/IndentSheet";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/product-prices" element={<ProductPrices />} />
           <Route path="/packing-materials" element={<PackingMaterials />} />
           <Route path="/chemical-prices" element={<ChemicalPrices />} />
+          <Route path="/indent-sheet" element={<IndentSheet />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
