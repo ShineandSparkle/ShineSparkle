@@ -12,7 +12,7 @@ export const brassCleaningFormulation: FormulationData = {
   ingredients: [
     { slNo: 1, particulars: "RO Water", uom: "LTR", qty: 7, rate: 0.5, amount: 7 * 0.5 },
     { slNo: 2, particulars: "Citric Acid", uom: "KGS", qty: 0.75, rate: 150, amount: 0.75 * 150 },
-    { slNo: 3, particulars: "Salt", uom: "KGS", qty: 0.75, rate: 30, amount: 0.75 * 20 },
+    { slNo: 3, particulars: "Salt", uom: "KGS", qty: 0.75, rate: 30, amount: 0.75 * 30 },
     { slNo: 4, particulars: "SLES", uom: "KGS", qty: 3, rate: 100, amount: 3 * 100 },
     { slNo: 5, particulars: "Colour", uom: "LTR", qty: 0.05, rate: 400, amount: 0.05 * 400 }
   ],
