@@ -63,7 +63,7 @@ const IndentSheet = () => {
     });
 
     return Array.from(ingredientMap.values()).sort((a, b) => 
-      a.particulars.localeCompare(b.particulars)
+      b.totalAmount - a.totalAmount
     );
   }, [quantities]);
 
@@ -79,47 +79,39 @@ const IndentSheet = () => {
           <p className="text-slate-600">Enter quantities required for each formulation to calculate total ingredients needed</p>
         </div>
 
-        {/* Formulations List */}
-        <Card className="p-6 mb-8">
-          <h2 className="text-2xl font-semibold text-slate-800 mb-4">Formulations</h2>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-12">Sl No</TableHead>
-                  <TableHead>Formulation Name</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead className="text-right">Base Yield</TableHead>
-                  <TableHead className="text-right w-40">Qty Required (Litres/KGs)</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {formulationsData.map((formulation, index) => {
-                  const totalQuantity = formulation.TotalQuantity ?? formulation.baseYield;
-                  return (
-                    <TableRow key={formulation.id}>
-                      <TableCell className="font-medium">{index + 1}</TableCell>
-                      <TableCell className="font-medium">{formulation.name}</TableCell>
-                      <TableCell className="text-slate-600">{formulation.category}</TableCell>
-                      <TableCell className="text-right">{totalQuantity.toFixed(2)}</TableCell>
-                      <TableCell className="text-right">
-                        <Input
-                          type="number"
-                          min="0"
-                          step="0.01"
-                          placeholder="0.00"
-                          value={quantities[formulation.id] || ""}
-                          onChange={(e) => handleQuantityChange(formulation.id, e.target.value)}
-                          className="text-right"
-                        />
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
+        {/* Formulations Cards */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-semibold text-slate-800 mb-6">Formulations</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {formulationsData.map((formulation) => (
+              <Card key={formulation.id} className="p-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-slate-700 mb-1 block">
+                      Formulation Name
+                    </label>
+                    <p className="text-lg font-semibold text-slate-900">{formulation.name}</p>
+                  </div>
+                  <div>
+                    <label htmlFor={`qty-${formulation.id}`} className="text-sm font-medium text-slate-700 mb-1 block">
+                      Qty Required (Litres/KGs)
+                    </label>
+                    <Input
+                      id={`qty-${formulation.id}`}
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="0.00"
+                      value={quantities[formulation.id] || ""}
+                      onChange={(e) => handleQuantityChange(formulation.id, e.target.value)}
+                      className="text-right"
+                    />
+                  </div>
+                </div>
+              </Card>
+            ))}
           </div>
-        </Card>
+        </div>
 
         {/* Aggregated Ingredients */}
         {aggregatedIngredients.length > 0 && (
