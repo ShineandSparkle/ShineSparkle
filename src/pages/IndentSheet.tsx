@@ -74,44 +74,54 @@ const IndentSheet = () => {
       <Header />
       
       <main className="flex-1 container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-slate-800 mb-2">Indent Sheet</h1>
-          <p className="text-slate-600">Enter quantities required for each formulation to calculate total ingredients needed</p>
-        </div>
+        <div className="mb-8 text-center">
+        <h1 className="text-4xl font-bold text-slate-800 mb-2">Indent Sheet</h1>
+        <p className="text-slate-600">Enter quantities required for each formulation to calculate total ingredients needed</p>
+    </div>
 
-        {/* Formulations Cards */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-slate-800 mb-6">Formulations</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {formulationsData.map((formulation) => (
-              <Card key={formulation.id} className="p-6">
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium text-slate-700 mb-1 block">
-                      Formulation Name
-                    </label>
-                    <p className="text-lg font-semibold text-slate-900">{formulation.name}</p>
-                  </div>
-                  <div>
-                    <label htmlFor={`qty-${formulation.id}`} className="text-sm font-medium text-slate-700 mb-1 block">
-                      Qty Required (Litres/KGs)
-                    </label>
-                    <Input
-                      id={`qty-${formulation.id}`}
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      placeholder="0.00"
-                      value={quantities[formulation.id] || ""}
-                      onChange={(e) => handleQuantityChange(formulation.id, e.target.value)}
-                      className="text-right"
-                    />
-                  </div>
+
+      {/* Formulations Cards */}
+      <div className="mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {formulationsData.map((formulation) => (
+            <Card
+              key={formulation.id}
+              className="p-6 relative overflow-hidden shadow-md rounded-2xl bg-white transition-all hover:shadow-lg"
+              style={{
+                boxShadow: "inset 6px 0 0 0 #1E293B, 0 4px 10px rgba(0,0,0,0.08)",
+              }}
+            >
+              <div className="flex items-center justify-between">
+                <p className="text-lg font-semibold text-slate-900 tracking-wide">
+                  {formulation.name}
+                </p>
+                <div className="flex items-center space-x-2">
+                  <label
+                    htmlFor={`qty-${formulation.id}`}
+                    className="text-sm text-slate-600"
+                  >
+                    Qty:
+                  </label>
+                  <Input
+                    id={`qty-${formulation.id}`}
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="0.00"
+                    value={quantities[formulation.id] || ""}
+                    onChange={(e) =>
+                      handleQuantityChange(formulation.id, e.target.value)
+                    }
+                    className="w-24 text-right border-slate-300 focus:border-slate-700 focus:ring-0"
+                  />
                 </div>
-              </Card>
-            ))}
-          </div>
+              </div>
+            </Card>
+          ))}
         </div>
+      </div>
+
+
 
         {/* Aggregated Ingredients */}
         {aggregatedIngredients.length > 0 && (
