@@ -159,7 +159,7 @@ const StockRegister = () => {
             {/* WareHouse Tab */}
             <TabsContent value="podi">
               <Card className="p-6 mb-6">
-                <h3 className="text-xl font-semibold text-slate-800 mb-4">Add Podi Entry</h3>
+                <h3 className="text-xl font-semibold text-slate-800 mb-4">Add Warehouse Entry</h3>
                 <div className="flex gap-4 items-end flex-wrap">
                   <div className="flex flex-col gap-2 min-w-[160px]">
                     <label className="text-sm font-medium text-slate-700">Date</label>
@@ -188,10 +188,10 @@ const StockRegister = () => {
                   </div>
 
                   <div className="flex flex-col gap-2 min-w-[180px]">
-                    <label className="text-sm font-medium text-slate-700">Podi Name</label>
+                    <label className="text-sm font-medium text-slate-700">Product Name</label>
                     <Select value={podiProduct} onValueChange={setPodiProduct}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select podi" />
+                        <SelectValue placeholder="Select product" />
                       </SelectTrigger>
                       <SelectContent>
                         {formulationsData.map((f) => (
