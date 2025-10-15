@@ -152,16 +152,16 @@ const StockRegister = () => {
           {/* Tabs for Podi's Register and Raw Material Inventory */}
           <Tabs defaultValue="podi" className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="podi" className="text-lg">Podi's Register</TabsTrigger>
-              <TabsTrigger value="raw" className="text-lg">Raw Material Inventory</TabsTrigger>
+              <TabsTrigger value="podi" className="text-lg">WareHouse</TabsTrigger>
+              <TabsTrigger value="raw" className="text-lg">Distributor</TabsTrigger>
             </TabsList>
 
-            {/* Podi's Register Tab */}
+            {/* WareHouse Tab */}
             <TabsContent value="podi">
               <Card className="p-6 mb-6">
                 <h3 className="text-xl font-semibold text-slate-800 mb-4">Add Podi Entry</h3>
-                <div className="grid grid-cols-1 md:grid-cols-7 gap-4 items-end">
-                  <div className="flex flex-col gap-2">
+                <div className="flex gap-4 items-end flex-wrap">
+                  <div className="flex flex-col gap-2 min-w-[160px]">
                     <label className="text-sm font-medium text-slate-700">Date</label>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -187,7 +187,7 @@ const StockRegister = () => {
                     </Popover>
                   </div>
 
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 min-w-[180px]">
                     <label className="text-sm font-medium text-slate-700">Podi Name</label>
                     <Select value={podiProduct} onValueChange={setPodiProduct}>
                       <SelectTrigger>
@@ -201,49 +201,53 @@ const StockRegister = () => {
                     </Select>
                   </div>
 
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 min-w-[120px]">
                     <label className="text-sm font-medium text-slate-700">Opening</label>
                     <Input
                       type="number"
                       min="0"
-                      step="0.01"
+                      step="1"
                       value={podiOpening || ""}
                       onChange={(e) => setPodiOpening(parseFloat(e.target.value) || 0)}
                       className="text-right"
+                      onWheel={(e) => e.currentTarget.blur()}
                     />
                   </div>
 
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 min-w-[120px]">
                     <label className="text-sm font-medium text-slate-700">Production</label>
                     <Input
                       type="number"
                       min="0"
-                      step="0.01"
+                      step="1"
                       value={podiProduction || ""}
                       onChange={(e) => setPodiProduction(parseFloat(e.target.value) || 0)}
                       className="text-right"
+                      onWheel={(e) => e.currentTarget.blur()}
                     />
                   </div>
 
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 min-w-[120px]">
                     <label className="text-sm font-medium text-slate-700">Sales</label>
                     <Input
                       type="number"
                       min="0"
-                      step="0.01"
+                      step="1"
                       value={podiSales || ""}
                       onChange={(e) => setPodiSales(parseFloat(e.target.value) || 0)}
                       className="text-right"
+                      onWheel={(e) => e.currentTarget.blur()}
                     />
                   </div>
 
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 min-w-[120px]">
                     <label className="text-sm font-medium text-slate-700">Closing</label>
                     <Input
                       type="number"
                       value={podiClosing}
                       readOnly
                       className="text-right bg-slate-100"
+                      onWheel={(e) => e.currentTarget.blur()}
                     />
                   </div>
 
@@ -275,10 +279,10 @@ const StockRegister = () => {
                           <TableRow key={entry.id}>
                             <TableCell>{format(entry.date, "dd/MM/yyyy")}</TableCell>
                             <TableCell className="font-medium">{entry.productName}</TableCell>
-                            <TableCell className="text-right">{entry.opening.toFixed(2)}</TableCell>
-                            <TableCell className="text-right">{entry.production.toFixed(2)}</TableCell>
-                            <TableCell className="text-right">{entry.sales.toFixed(2)}</TableCell>
-                            <TableCell className="text-right font-semibold">{entry.closing.toFixed(2)}</TableCell>
+                            <TableCell className="text-right">{entry.opening.toFixed(0)}</TableCell>
+                            <TableCell className="text-right">{entry.production.toFixed(0)}</TableCell>
+                            <TableCell className="text-right">{entry.sales.toFixed(0)}</TableCell>
+                            <TableCell className="text-right font-semibold">{entry.closing.toFixed(0)}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -288,12 +292,12 @@ const StockRegister = () => {
               )}
             </TabsContent>
 
-            {/* Raw Material Inventory Tab */}
+            {/* Distributor Tab */}
             <TabsContent value="raw">
               <Card className="p-6 mb-6">
-                <h3 className="text-xl font-semibold text-slate-800 mb-4">Add Raw Material Entry</h3>
-                <div className="grid grid-cols-1 md:grid-cols-7 gap-4 items-end">
-                  <div className="flex flex-col gap-2">
+                <h3 className="text-xl font-semibold text-slate-800 mb-4">Add Distributor Entry</h3>
+                <div className="flex gap-4 items-end flex-wrap">
+                  <div className="flex flex-col gap-2 min-w-[160px]">
                     <label className="text-sm font-medium text-slate-700">Date</label>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -319,59 +323,67 @@ const StockRegister = () => {
                     </Popover>
                   </div>
 
-                  <div className="flex flex-col gap-2">
-                    <label className="text-sm font-medium text-slate-700">Material Name</label>
-                    <Input
-                      type="text"
-                      placeholder="Enter material name"
-                      value={rawProduct}
-                      onChange={(e) => setRawProduct(e.target.value)}
-                    />
+                  <div className="flex flex-col gap-2 min-w-[180px]">
+                    <label className="text-sm font-medium text-slate-700">Product Name</label>
+                    <Select value={rawProduct} onValueChange={setRawProduct}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select product" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {formulationsData.map((f) => (
+                          <SelectItem key={f.id} value={f.name}>{f.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 min-w-[120px]">
                     <label className="text-sm font-medium text-slate-700">Opening</label>
                     <Input
                       type="number"
                       min="0"
-                      step="0.01"
+                      step="1"
                       value={rawOpening || ""}
                       onChange={(e) => setRawOpening(parseFloat(e.target.value) || 0)}
                       className="text-right"
+                      onWheel={(e) => e.currentTarget.blur()}
                     />
                   </div>
 
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 min-w-[120px]">
                     <label className="text-sm font-medium text-slate-700">Production</label>
                     <Input
                       type="number"
                       min="0"
-                      step="0.01"
+                      step="1"
                       value={rawProduction || ""}
                       onChange={(e) => setRawProduction(parseFloat(e.target.value) || 0)}
                       className="text-right"
+                      onWheel={(e) => e.currentTarget.blur()}
                     />
                   </div>
 
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 min-w-[120px]">
                     <label className="text-sm font-medium text-slate-700">Sales</label>
                     <Input
                       type="number"
                       min="0"
-                      step="0.01"
+                      step="1"
                       value={rawSales || ""}
                       onChange={(e) => setRawSales(parseFloat(e.target.value) || 0)}
                       className="text-right"
+                      onWheel={(e) => e.currentTarget.blur()}
                     />
                   </div>
 
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 min-w-[120px]">
                     <label className="text-sm font-medium text-slate-700">Closing</label>
                     <Input
                       type="number"
                       value={rawClosing}
                       readOnly
                       className="text-right bg-slate-100"
+                      onWheel={(e) => e.currentTarget.blur()}
                     />
                   </div>
 
@@ -382,16 +394,16 @@ const StockRegister = () => {
                 </div>
               </Card>
 
-              {/* Raw Material Entries Table */}
+              {/* Distributor Entries Table */}
               {rawMaterialEntries.length > 0 && (
                 <Card className="p-6">
-                  <h3 className="text-xl font-semibold text-slate-800 mb-4">Raw Material Stock Entries</h3>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-4">Distributor Stock Entries</h3>
                   <div className="overflow-x-auto">
                     <Table>
                       <TableHeader>
                         <TableRow>
                           <TableHead>Date</TableHead>
-                          <TableHead>Material Name</TableHead>
+                          <TableHead>Product Name</TableHead>
                           <TableHead className="text-right">Opening</TableHead>
                           <TableHead className="text-right">Production</TableHead>
                           <TableHead className="text-right">Sales</TableHead>
@@ -403,10 +415,10 @@ const StockRegister = () => {
                           <TableRow key={entry.id}>
                             <TableCell>{format(entry.date, "dd/MM/yyyy")}</TableCell>
                             <TableCell className="font-medium">{entry.productName}</TableCell>
-                            <TableCell className="text-right">{entry.opening.toFixed(2)}</TableCell>
-                            <TableCell className="text-right">{entry.production.toFixed(2)}</TableCell>
-                            <TableCell className="text-right">{entry.sales.toFixed(2)}</TableCell>
-                            <TableCell className="text-right font-semibold">{entry.closing.toFixed(2)}</TableCell>
+                            <TableCell className="text-right">{entry.opening.toFixed(0)}</TableCell>
+                            <TableCell className="text-right">{entry.production.toFixed(0)}</TableCell>
+                            <TableCell className="text-right">{entry.sales.toFixed(0)}</TableCell>
+                            <TableCell className="text-right font-semibold">{entry.closing.toFixed(0)}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
