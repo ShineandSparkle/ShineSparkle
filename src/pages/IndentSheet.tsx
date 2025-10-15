@@ -21,8 +21,12 @@ interface AggregatedIngredient {
 const formatNumber = (num: number): string => {
   // Round to 3 decimal places
   const rounded = Math.round(num * 1000) / 1000;
-  // Convert to string and remove trailing zeros
-  return rounded.toString().replace(/\.?0+$/, '');
+  // Convert to string and remove trailing zeros after decimal point only
+  const str = rounded.toString();
+  if (str.includes('.')) {
+    return str.replace(/\.?0+$/, '');
+  }
+  return str;
 };
 
 const IndentSheet = () => {

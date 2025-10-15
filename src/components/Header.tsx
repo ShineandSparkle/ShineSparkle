@@ -38,6 +38,12 @@ const Header = () => {
             >
               Indent Sheet
             </Link>
+            <Link
+              to="/stock-register"
+              className="bg-white text-blue-600 font-semibold py-2 px-4 rounded-lg shadow hover:bg-blue-100 transition-colors"
+            >
+              Stock Register
+            </Link>
           </nav>
         </div>
       </div>
