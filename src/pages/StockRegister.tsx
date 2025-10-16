@@ -28,66 +28,66 @@ interface StockEntry {
 const StockRegister = () => {
   const navigate = useNavigate();
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date(2025, 9)); // October 2025
-  const [podiEntries, setPodiEntries] = useState<StockEntry[]>([]);
-  const [rawMaterialEntries, setRawMaterialEntries] = useState<StockEntry[]>([]);
+  const [warehouseEntries, setWarehouseEntries] = useState<StockEntry[]>([]);
+  const [distributorEntries, setDistributorEntries] = useState<StockEntry[]>([]);
   
-  // Form states for Podi's Register
-  const [podiDate, setPodiDate] = useState<Date>(new Date());
-  const [podiProduct, setPodiProduct] = useState<string>("");
-  const [podiOpening, setPodiOpening] = useState<number>(0);
-  const [podiProduction, setPodiProduction] = useState<number>(0);
-  const [podiSales, setPodiSales] = useState<number>(0);
+  // Form states for Warehouse Register
+  const [warehouseDate, setWarehouseDate] = useState<Date>(new Date());
+  const [warehouseProduct, setWarehouseProduct] = useState<string>("");
+  const [warehouseOpening, setWarehouseOpening] = useState<number>(0);
+  const [warehouseProduction, setWarehouseProduction] = useState<number>(0);
+  const [warehouseSales, setWarehouseSales] = useState<number>(0);
   
-  // Form states for Raw Material Inventory
-  const [rawDate, setRawDate] = useState<Date>(new Date());
-  const [rawProduct, setRawProduct] = useState<string>("");
-  const [rawOpening, setRawOpening] = useState<number>(0);
-  const [rawProduction, setRawProduction] = useState<number>(0);
-  const [rawSales, setRawSales] = useState<number>(0);
+  // Form states for Distributor Inventory
+  const [distributorDate, setDistributorDate] = useState<Date>(new Date());
+  const [distributorProduct, setDistributorProduct] = useState<string>("");
+  const [distributorOpening, setDistributorOpening] = useState<number>(0);
+  const [distributorProduction, setDistributorProduction] = useState<number>(0);
+  const [distributorSales, setDistributorSales] = useState<number>(0);
 
-  const podiClosing = useMemo(() => podiOpening + podiProduction - podiSales, [podiOpening, podiProduction, podiSales]);
-  const rawClosing = useMemo(() => rawOpening + rawProduction - rawSales, [rawOpening, rawProduction, rawSales]);
+  const warehouseClosing = useMemo(() => warehouseOpening + warehouseProduction - warehouseSales, [warehouseOpening, warehouseProduction, warehouseSales]);
+  const distributorClosing = useMemo(() => distributorOpening + distributorProduction - distributorSales, [distributorOpening, distributorProduction, distributorSales]);
 
-  const handleAddPodiEntry = () => {
-    if (!podiProduct) return;
+  const handleAddWarehouseEntry = () => {
+    if (!warehouseProduct) return;
     
     const newEntry: StockEntry = {
       id: Date.now().toString(),
-      date: podiDate,
-      productName: podiProduct,
-      opening: podiOpening,
-      production: podiProduction,
-      sales: podiSales,
-      closing: podiClosing
+      date: warehouseDate,
+      productName: warehouseProduct,
+      opening: warehouseOpening,
+      production: warehouseProduction,
+      sales: warehouseSales,
+      closing: warehouseClosing
     };
     
-    setPodiEntries([...podiEntries, newEntry]);
+    setWarehouseEntries([...warehouseEntries, newEntry]);
     // Reset form
-    setPodiProduct("");
-    setPodiOpening(0);
-    setPodiProduction(0);
-    setPodiSales(0);
+    setWarehouseProduct("");
+    setWarehouseOpening(0);
+    setWarehouseProduction(0);
+    setWarehouseSales(0);
   };
 
-  const handleAddRawEntry = () => {
-    if (!rawProduct) return;
+  const handleAddDistributorEntry = () => {
+    if (!distributorProduct) return;
     
     const newEntry: StockEntry = {
       id: Date.now().toString(),
-      date: rawDate,
-      productName: rawProduct,
-      opening: rawOpening,
-      production: rawProduction,
-      sales: rawSales,
-      closing: rawClosing
+      date: distributorDate,
+      productName: distributorProduct,
+      opening: distributorOpening,
+      production: distributorProduction,
+      sales: distributorSales,
+      closing: distributorClosing
     };
     
-    setRawMaterialEntries([...rawMaterialEntries, newEntry]);
+    setDistributorEntries([...distributorEntries, newEntry]);
     // Reset form
-    setRawProduct("");
-    setRawOpening(0);
-    setRawProduction(0);
-    setRawSales(0);
+    setDistributorProduct("");
+    setDistributorOpening(0);
+    setDistributorProduction(0);
+    setDistributorSales(0);
   };
 
   const handlePrintReport = () => {
@@ -149,15 +149,15 @@ const StockRegister = () => {
             </Popover>
           </Card>
 
-          {/* Tabs for Podi's Register and Raw Material Inventory */}
-          <Tabs defaultValue="podi" className="w-full">
+          {/* Tabs for Warehouse and Distributor */}
+          <Tabs defaultValue="warehouse" className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="podi" className="text-lg">WareHouse</TabsTrigger>
-              <TabsTrigger value="raw" className="text-lg">Distributor</TabsTrigger>
+              <TabsTrigger value="warehouse" className="text-lg">Warehouse</TabsTrigger>
+              <TabsTrigger value="distributor" className="text-lg">Distributor</TabsTrigger>
             </TabsList>
 
-            {/* WareHouse Tab */}
-            <TabsContent value="podi">
+            {/* Warehouse Tab */}
+            <TabsContent value="warehouse">
               <Card className="p-6 mb-6">
                 <h3 className="text-xl font-semibold text-slate-800 mb-4">Add Warehouse Entry</h3>
                 <div className="flex gap-4 items-end flex-wrap">
@@ -169,18 +169,18 @@ const StockRegister = () => {
                           variant="outline"
                           className={cn(
                             "justify-start text-left font-normal",
-                            !podiDate && "text-muted-foreground"
+                            !warehouseDate && "text-muted-foreground"
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
-                          {format(podiDate, "dd/MM/yyyy")}
+                          {format(warehouseDate, "dd/MM/yyyy")}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0">
                         <Calendar
                           mode="single"
-                          selected={podiDate}
-                          onSelect={(date) => date && setPodiDate(date)}
+                          selected={warehouseDate}
+                          onSelect={(date) => date && setWarehouseDate(date)}
                           initialFocus
                         />
                       </PopoverContent>
@@ -189,7 +189,7 @@ const StockRegister = () => {
 
                   <div className="flex flex-col gap-2 min-w-[180px]">
                     <label className="text-sm font-medium text-slate-700">Product Name</label>
-                    <Select value={podiProduct} onValueChange={setPodiProduct}>
+                    <Select value={warehouseProduct} onValueChange={setWarehouseProduct}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select product" />
                       </SelectTrigger>
@@ -207,8 +207,8 @@ const StockRegister = () => {
                       type="number"
                       min="0"
                       step="1"
-                      value={podiOpening || ""}
-                      onChange={(e) => setPodiOpening(parseFloat(e.target.value) || 0)}
+                      value={warehouseOpening || ""}
+                      onChange={(e) => setWarehouseOpening(parseFloat(e.target.value) || 0)}
                       className="text-right"
                       onWheel={(e) => e.currentTarget.blur()}
                     />
@@ -220,8 +220,8 @@ const StockRegister = () => {
                       type="number"
                       min="0"
                       step="1"
-                      value={podiProduction || ""}
-                      onChange={(e) => setPodiProduction(parseFloat(e.target.value) || 0)}
+                      value={warehouseProduction || ""}
+                      onChange={(e) => setWarehouseProduction(parseFloat(e.target.value) || 0)}
                       className="text-right"
                       onWheel={(e) => e.currentTarget.blur()}
                     />
@@ -233,8 +233,8 @@ const StockRegister = () => {
                       type="number"
                       min="0"
                       step="1"
-                      value={podiSales || ""}
-                      onChange={(e) => setPodiSales(parseFloat(e.target.value) || 0)}
+                      value={warehouseSales || ""}
+                      onChange={(e) => setWarehouseSales(parseFloat(e.target.value) || 0)}
                       className="text-right"
                       onWheel={(e) => e.currentTarget.blur()}
                     />
@@ -244,30 +244,30 @@ const StockRegister = () => {
                     <label className="text-sm font-medium text-slate-700">Closing</label>
                     <Input
                       type="number"
-                      value={podiClosing}
+                      value={warehouseClosing}
                       readOnly
                       className="text-right bg-slate-100"
                       onWheel={(e) => e.currentTarget.blur()}
                     />
                   </div>
 
-                  <Button onClick={handleAddPodiEntry} className="gap-2">
+                  <Button onClick={handleAddWarehouseEntry} className="gap-2">
                     <Plus className="h-4 w-4" />
                     Add
                   </Button>
                 </div>
               </Card>
 
-              {/* Podi Entries Table */}
-              {podiEntries.length > 0 && (
+              {/* Warehouse Entries Table */}
+              {warehouseEntries.length > 0 && (
                 <Card className="p-6">
-                  <h3 className="text-xl font-semibold text-slate-800 mb-4">Podi Stock Entries</h3>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-4">Warehouse Stock Entries</h3>
                   <div className="overflow-x-auto">
                     <Table>
                       <TableHeader>
                         <TableRow>
                           <TableHead>Date</TableHead>
-                          <TableHead>Podi Name</TableHead>
+                          <TableHead>Product Name</TableHead>
                           <TableHead className="text-right">Opening</TableHead>
                           <TableHead className="text-right">Production</TableHead>
                           <TableHead className="text-right">Sales</TableHead>
@@ -275,7 +275,7 @@ const StockRegister = () => {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {podiEntries.map((entry) => (
+                        {warehouseEntries.map((entry) => (
                           <TableRow key={entry.id}>
                             <TableCell>{format(entry.date, "dd/MM/yyyy")}</TableCell>
                             <TableCell className="font-medium">{entry.productName}</TableCell>
@@ -293,7 +293,7 @@ const StockRegister = () => {
             </TabsContent>
 
             {/* Distributor Tab */}
-            <TabsContent value="raw">
+            <TabsContent value="distributor">
               <Card className="p-6 mb-6">
                 <h3 className="text-xl font-semibold text-slate-800 mb-4">Add Distributor Entry</h3>
                 <div className="flex gap-4 items-end flex-wrap">
@@ -305,18 +305,18 @@ const StockRegister = () => {
                           variant="outline"
                           className={cn(
                             "justify-start text-left font-normal",
-                            !rawDate && "text-muted-foreground"
+                            !distributorDate && "text-muted-foreground"
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
-                          {format(rawDate, "dd/MM/yyyy")}
+                          {format(distributorDate, "dd/MM/yyyy")}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0">
                         <Calendar
                           mode="single"
-                          selected={rawDate}
-                          onSelect={(date) => date && setRawDate(date)}
+                          selected={distributorDate}
+                          onSelect={(date) => date && setDistributorDate(date)}
                           initialFocus
                         />
                       </PopoverContent>
@@ -325,7 +325,7 @@ const StockRegister = () => {
 
                   <div className="flex flex-col gap-2 min-w-[180px]">
                     <label className="text-sm font-medium text-slate-700">Product Name</label>
-                    <Select value={rawProduct} onValueChange={setRawProduct}>
+                    <Select value={distributorProduct} onValueChange={setDistributorProduct}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select product" />
                       </SelectTrigger>
@@ -343,8 +343,8 @@ const StockRegister = () => {
                       type="number"
                       min="0"
                       step="1"
-                      value={rawOpening || ""}
-                      onChange={(e) => setRawOpening(parseFloat(e.target.value) || 0)}
+                      value={distributorOpening || ""}
+                      onChange={(e) => setDistributorOpening(parseFloat(e.target.value) || 0)}
                       className="text-right"
                       onWheel={(e) => e.currentTarget.blur()}
                     />
@@ -356,8 +356,8 @@ const StockRegister = () => {
                       type="number"
                       min="0"
                       step="1"
-                      value={rawProduction || ""}
-                      onChange={(e) => setRawProduction(parseFloat(e.target.value) || 0)}
+                      value={distributorProduction || ""}
+                      onChange={(e) => setDistributorProduction(parseFloat(e.target.value) || 0)}
                       className="text-right"
                       onWheel={(e) => e.currentTarget.blur()}
                     />
@@ -369,8 +369,8 @@ const StockRegister = () => {
                       type="number"
                       min="0"
                       step="1"
-                      value={rawSales || ""}
-                      onChange={(e) => setRawSales(parseFloat(e.target.value) || 0)}
+                      value={distributorSales || ""}
+                      onChange={(e) => setDistributorSales(parseFloat(e.target.value) || 0)}
                       className="text-right"
                       onWheel={(e) => e.currentTarget.blur()}
                     />
@@ -380,14 +380,14 @@ const StockRegister = () => {
                     <label className="text-sm font-medium text-slate-700">Closing</label>
                     <Input
                       type="number"
-                      value={rawClosing}
+                      value={distributorClosing}
                       readOnly
                       className="text-right bg-slate-100"
                       onWheel={(e) => e.currentTarget.blur()}
                     />
                   </div>
 
-                  <Button onClick={handleAddRawEntry} className="gap-2">
+                  <Button onClick={handleAddDistributorEntry} className="gap-2">
                     <Plus className="h-4 w-4" />
                     Add
                   </Button>
@@ -395,7 +395,7 @@ const StockRegister = () => {
               </Card>
 
               {/* Distributor Entries Table */}
-              {rawMaterialEntries.length > 0 && (
+              {distributorEntries.length > 0 && (
                 <Card className="p-6">
                   <h3 className="text-xl font-semibold text-slate-800 mb-4">Distributor Stock Entries</h3>
                   <div className="overflow-x-auto">
@@ -411,7 +411,7 @@ const StockRegister = () => {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {rawMaterialEntries.map((entry) => (
+                        {distributorEntries.map((entry) => (
                           <TableRow key={entry.id}>
                             <TableCell>{format(entry.date, "dd/MM/yyyy")}</TableCell>
                             <TableCell className="font-medium">{entry.productName}</TableCell>
