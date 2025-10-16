@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
@@ -9,11 +9,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { format } from "date-fns";
+import { format, startOfMonth } from "date-fns";
 import { Calendar as CalendarIcon, Printer, ArrowLeft, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formulationsData } from "@/data/formulations";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface StockEntry {
   id: string;
@@ -25,11 +27,47 @@ interface StockEntry {
   closing: number;
 }
 
+interface RawMaterialEntry {
+  id: string;
+  chemicalName: string;
+  opening: number;
+  purchased: number;
+  used: number;
+  closing: number;
+}
+
+const chemicalsList = [
+  "Acid (Hydrochloric acid)",
+  "Acid Slurry",
+  "Alphox 200",
+  "AOS (Alpha Olefin Sulphonate)",
+  "BKC (Benzalkonium Chloride)",
+  "CAPB (Cocamidopropyl Betaine)",
+  "Caustic Soda",
+  "Citric Acid",
+  "Colour",
+  "Cutting Oil",
+  "Glycerine",
+  "Hand Wash Base",
+  "IPA (Isopropyl Alcohol)",
+  "Perfume - Jasmine - Phenyl",
+  "Phenyl Compound",
+  "Pine Oil",
+  "SLES (Sodium Lauryl Ether Sulfate)",
+  "Soap Oil",
+  "Soda Ash (Sodium carbonate)",
+  "SS (Sodium Sulphate) - Global Salt",
+  "TRO (Turkey Red Oil)",
+  "TSP (Trisodium Phosphate)",
+  "Urea"
+];
+
 const StockRegister = () => {
   const navigate = useNavigate();
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date(2025, 9)); // October 2025
   const [warehouseEntries, setWarehouseEntries] = useState<StockEntry[]>([]);
   const [distributorEntries, setDistributorEntries] = useState<StockEntry[]>([]);
+  const [rawMaterialEntries, setRawMaterialEntries] = useState<RawMaterialEntry[]>([]);
   
   // Form states for Warehouse Register
   const [warehouseDate, setWarehouseDate] = useState<Date>(new Date());
@@ -45,49 +83,235 @@ const StockRegister = () => {
   const [distributorProduction, setDistributorProduction] = useState<number>(0);
   const [distributorSales, setDistributorSales] = useState<number>(0);
 
+  // Form states for Raw Materials
+  const [rawMaterialChemical, setRawMaterialChemical] = useState<string>("");
+  const [rawMaterialOpening, setRawMaterialOpening] = useState<number>(0);
+  const [rawMaterialPurchased, setRawMaterialPurchased] = useState<number>(0);
+  const [rawMaterialUsed, setRawMaterialUsed] = useState<number>(0);
+
   const warehouseClosing = useMemo(() => warehouseOpening + warehouseProduction - warehouseSales, [warehouseOpening, warehouseProduction, warehouseSales]);
   const distributorClosing = useMemo(() => distributorOpening + distributorProduction - distributorSales, [distributorOpening, distributorProduction, distributorSales]);
+  const rawMaterialClosing = useMemo(() => rawMaterialOpening + rawMaterialPurchased - rawMaterialUsed, [rawMaterialOpening, rawMaterialPurchased, rawMaterialUsed]);
 
-  const handleAddWarehouseEntry = () => {
-    if (!warehouseProduct) return;
+  // Load entries from database when month changes
+  useEffect(() => {
+    loadWarehouseEntries();
+    loadDistributorEntries();
+    loadRawMaterialEntries();
+  }, [selectedMonth]);
+
+  const loadWarehouseEntries = async () => {
+    const monthStart = startOfMonth(selectedMonth);
+    const { data, error } = await supabase
+      .from('warehouse_stock')
+      .select('*')
+      .eq('month', format(monthStart, 'yyyy-MM-dd'));
     
-    const newEntry: StockEntry = {
-      id: Date.now().toString(),
-      date: warehouseDate,
-      productName: warehouseProduct,
-      opening: warehouseOpening,
-      production: warehouseProduction,
-      sales: warehouseSales,
-      closing: warehouseClosing
-    };
+    if (error) {
+      console.error('Error loading warehouse entries:', error);
+      return;
+    }
     
-    setWarehouseEntries([...warehouseEntries, newEntry]);
-    // Reset form
-    setWarehouseProduct("");
-    setWarehouseOpening(0);
-    setWarehouseProduction(0);
-    setWarehouseSales(0);
+    if (data) {
+      const entries: StockEntry[] = data.map(entry => ({
+        id: entry.id,
+        date: new Date(entry.month),
+        productName: entry.product_name,
+        opening: Number(entry.opening),
+        production: Number(entry.production),
+        sales: Number(entry.sales),
+        closing: Number(entry.closing)
+      }));
+      setWarehouseEntries(entries);
+    }
   };
 
-  const handleAddDistributorEntry = () => {
+  const loadDistributorEntries = async () => {
+    const monthStart = startOfMonth(selectedMonth);
+    const { data, error } = await supabase
+      .from('distributor_stock')
+      .select('*')
+      .eq('month', format(monthStart, 'yyyy-MM-dd'));
+    
+    if (error) {
+      console.error('Error loading distributor entries:', error);
+      return;
+    }
+    
+    if (data) {
+      const entries: StockEntry[] = data.map(entry => ({
+        id: entry.id,
+        date: new Date(entry.month),
+        productName: entry.product_name,
+        opening: Number(entry.opening),
+        production: Number(entry.production),
+        sales: Number(entry.sales),
+        closing: Number(entry.closing)
+      }));
+      setDistributorEntries(entries);
+    }
+  };
+
+  const loadRawMaterialEntries = async () => {
+    const monthStart = startOfMonth(selectedMonth);
+    const { data, error } = await supabase
+      .from('raw_materials_stock')
+      .select('*')
+      .eq('month', format(monthStart, 'yyyy-MM-dd'));
+    
+    if (error) {
+      console.error('Error loading raw material entries:', error);
+      return;
+    }
+    
+    if (data) {
+      const entries: RawMaterialEntry[] = data.map(entry => ({
+        id: entry.id,
+        chemicalName: entry.chemical_name,
+        opening: Number(entry.opening),
+        purchased: Number(entry.purchased),
+        used: Number(entry.used),
+        closing: Number(entry.closing)
+      }));
+      setRawMaterialEntries(entries);
+    }
+  };
+
+  const handleAddWarehouseEntry = async () => {
+    if (!warehouseProduct) return;
+    
+    const monthStart = startOfMonth(selectedMonth);
+    
+    const { data, error } = await supabase
+      .from('warehouse_stock')
+      .insert({
+        month: format(monthStart, 'yyyy-MM-dd'),
+        product_name: warehouseProduct,
+        opening: warehouseOpening,
+        production: warehouseProduction,
+        sales: warehouseSales,
+        closing: warehouseClosing
+      })
+      .select()
+      .single();
+    
+    if (error) {
+      toast.error('Failed to add warehouse entry');
+      console.error('Error adding warehouse entry:', error);
+      return;
+    }
+    
+    if (data) {
+      const newEntry: StockEntry = {
+        id: data.id,
+        date: new Date(data.month),
+        productName: data.product_name,
+        opening: Number(data.opening),
+        production: Number(data.production),
+        sales: Number(data.sales),
+        closing: Number(data.closing)
+      };
+      
+      setWarehouseEntries([...warehouseEntries, newEntry]);
+      toast.success('Warehouse entry added successfully');
+      
+      // Reset form
+      setWarehouseProduct("");
+      setWarehouseOpening(0);
+      setWarehouseProduction(0);
+      setWarehouseSales(0);
+    }
+  };
+
+  const handleAddDistributorEntry = async () => {
     if (!distributorProduct) return;
     
-    const newEntry: StockEntry = {
-      id: Date.now().toString(),
-      date: distributorDate,
-      productName: distributorProduct,
-      opening: distributorOpening,
-      production: distributorProduction,
-      sales: distributorSales,
-      closing: distributorClosing
-    };
+    const monthStart = startOfMonth(selectedMonth);
     
-    setDistributorEntries([...distributorEntries, newEntry]);
-    // Reset form
-    setDistributorProduct("");
-    setDistributorOpening(0);
-    setDistributorProduction(0);
-    setDistributorSales(0);
+    const { data, error } = await supabase
+      .from('distributor_stock')
+      .insert({
+        month: format(monthStart, 'yyyy-MM-dd'),
+        product_name: distributorProduct,
+        opening: distributorOpening,
+        production: distributorProduction,
+        sales: distributorSales,
+        closing: distributorClosing
+      })
+      .select()
+      .single();
+    
+    if (error) {
+      toast.error('Failed to add distributor entry');
+      console.error('Error adding distributor entry:', error);
+      return;
+    }
+    
+    if (data) {
+      const newEntry: StockEntry = {
+        id: data.id,
+        date: new Date(data.month),
+        productName: data.product_name,
+        opening: Number(data.opening),
+        production: Number(data.production),
+        sales: Number(data.sales),
+        closing: Number(data.closing)
+      };
+      
+      setDistributorEntries([...distributorEntries, newEntry]);
+      toast.success('Distributor entry added successfully');
+      
+      // Reset form
+      setDistributorProduct("");
+      setDistributorOpening(0);
+      setDistributorProduction(0);
+      setDistributorSales(0);
+    }
+  };
+
+  const handleAddRawMaterialEntry = async () => {
+    if (!rawMaterialChemical) return;
+    
+    const monthStart = startOfMonth(selectedMonth);
+    
+    const { data, error } = await supabase
+      .from('raw_materials_stock')
+      .insert({
+        month: format(monthStart, 'yyyy-MM-dd'),
+        chemical_name: rawMaterialChemical,
+        opening: rawMaterialOpening,
+        purchased: rawMaterialPurchased,
+        used: rawMaterialUsed,
+        closing: rawMaterialClosing
+      })
+      .select()
+      .single();
+    
+    if (error) {
+      toast.error('Failed to add raw material entry');
+      console.error('Error adding raw material entry:', error);
+      return;
+    }
+    
+    if (data) {
+      const newEntry: RawMaterialEntry = {
+        id: data.id,
+        chemicalName: data.chemical_name,
+        opening: Number(data.opening),
+        purchased: Number(data.purchased),
+        used: Number(data.used),
+        closing: Number(data.closing)
+      };
+      
+      setRawMaterialEntries([...rawMaterialEntries, newEntry]);
+      toast.success('Raw material entry added successfully');
+      
+      // Reset form
+      setRawMaterialChemical("");
+      setRawMaterialOpening(0);
+      setRawMaterialPurchased(0);
+      setRawMaterialUsed(0);
+    }
   };
 
   const handlePrintReport = () => {
@@ -149,16 +373,17 @@ const StockRegister = () => {
             </Popover>
           </Card>
 
-          {/* Tabs for Warehouse and Distributor */}
+          {/* Tabs for Warehouse, Distributor, and Raw Materials */}
           <Tabs defaultValue="warehouse" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsList className="grid w-full grid-cols-3 mb-6">
               <TabsTrigger value="warehouse" className="text-lg">Warehouse</TabsTrigger>
               <TabsTrigger value="distributor" className="text-lg">Distributor</TabsTrigger>
+              <TabsTrigger value="rawmaterials" className="text-lg">Raw Materials</TabsTrigger>
             </TabsList>
 
             {/* Warehouse Tab */}
             <TabsContent value="warehouse">
-              <Card className="p-6 mb-6">
+              <Card className="p-6 mb-6 shadow-lg">
                 <h3 className="text-xl font-semibold text-slate-800 mb-4">Add Warehouse Entry</h3>
                 <div className="flex gap-4 items-end flex-wrap">
                   <div className="flex flex-col gap-2 min-w-[160px]">
@@ -260,7 +485,7 @@ const StockRegister = () => {
 
               {/* Warehouse Entries Table */}
               {warehouseEntries.length > 0 && (
-                <Card className="p-6">
+                <Card className="p-6 shadow-lg">
                   <h3 className="text-xl font-semibold text-slate-800 mb-4">Warehouse Stock Entries</h3>
                   <div className="overflow-x-auto">
                     <Table>
@@ -294,7 +519,7 @@ const StockRegister = () => {
 
             {/* Distributor Tab */}
             <TabsContent value="distributor">
-              <Card className="p-6 mb-6">
+              <Card className="p-6 mb-6 shadow-lg">
                 <h3 className="text-xl font-semibold text-slate-800 mb-4">Add Distributor Entry</h3>
                 <div className="flex gap-4 items-end flex-wrap">
                   <div className="flex flex-col gap-2 min-w-[160px]">
@@ -396,7 +621,7 @@ const StockRegister = () => {
 
               {/* Distributor Entries Table */}
               {distributorEntries.length > 0 && (
-                <Card className="p-6">
+                <Card className="p-6 shadow-lg">
                   <h3 className="text-xl font-semibold text-slate-800 mb-4">Distributor Stock Entries</h3>
                   <div className="overflow-x-auto">
                     <Table>
@@ -418,6 +643,114 @@ const StockRegister = () => {
                             <TableCell className="text-right">{entry.opening.toFixed(0)}</TableCell>
                             <TableCell className="text-right">{entry.production.toFixed(0)}</TableCell>
                             <TableCell className="text-right">{entry.sales.toFixed(0)}</TableCell>
+                            <TableCell className="text-right font-semibold">{entry.closing.toFixed(0)}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </Card>
+              )}
+            </TabsContent>
+
+            {/* Raw Materials Tab */}
+            <TabsContent value="rawmaterials">
+              <Card className="p-6 mb-6 shadow-lg">
+                <h3 className="text-xl font-semibold text-slate-800 mb-4">Add Raw Material Entry</h3>
+                <div className="flex gap-4 items-end flex-wrap">
+                  <div className="flex flex-col gap-2 min-w-[200px]">
+                    <label className="text-sm font-medium text-slate-700">Chemical Name</label>
+                    <Select value={rawMaterialChemical} onValueChange={setRawMaterialChemical}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select chemical" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {chemicalsList.map((chemical) => (
+                          <SelectItem key={chemical} value={chemical}>{chemical}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex flex-col gap-2 min-w-[120px]">
+                    <label className="text-sm font-medium text-slate-700">Opening</label>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={rawMaterialOpening || ""}
+                      onChange={(e) => setRawMaterialOpening(parseFloat(e.target.value) || 0)}
+                      className="text-right"
+                      onWheel={(e) => e.currentTarget.blur()}
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-2 min-w-[120px]">
+                    <label className="text-sm font-medium text-slate-700">Purchased</label>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={rawMaterialPurchased || ""}
+                      onChange={(e) => setRawMaterialPurchased(parseFloat(e.target.value) || 0)}
+                      className="text-right"
+                      onWheel={(e) => e.currentTarget.blur()}
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-2 min-w-[120px]">
+                    <label className="text-sm font-medium text-slate-700">Used</label>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={rawMaterialUsed || ""}
+                      onChange={(e) => setRawMaterialUsed(parseFloat(e.target.value) || 0)}
+                      className="text-right"
+                      onWheel={(e) => e.currentTarget.blur()}
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-2 min-w-[120px]">
+                    <label className="text-sm font-medium text-slate-700">Closing</label>
+                    <Input
+                      type="number"
+                      value={rawMaterialClosing}
+                      readOnly
+                      className="text-right bg-slate-100"
+                      onWheel={(e) => e.currentTarget.blur()}
+                    />
+                  </div>
+
+                  <Button onClick={handleAddRawMaterialEntry} className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    Add
+                  </Button>
+                </div>
+              </Card>
+
+              {/* Raw Material Entries Table */}
+              {rawMaterialEntries.length > 0 && (
+                <Card className="p-6 shadow-lg">
+                  <h3 className="text-xl font-semibold text-slate-800 mb-4">Raw Material Stock Entries</h3>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Chemical Name</TableHead>
+                          <TableHead className="text-right">Opening</TableHead>
+                          <TableHead className="text-right">Purchased</TableHead>
+                          <TableHead className="text-right">Used</TableHead>
+                          <TableHead className="text-right">Closing</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {rawMaterialEntries.map((entry) => (
+                          <TableRow key={entry.id}>
+                            <TableCell className="font-medium">{entry.chemicalName}</TableCell>
+                            <TableCell className="text-right">{entry.opening.toFixed(0)}</TableCell>
+                            <TableCell className="text-right">{entry.purchased.toFixed(0)}</TableCell>
+                            <TableCell className="text-right">{entry.used.toFixed(0)}</TableCell>
                             <TableCell className="text-right font-semibold">{entry.closing.toFixed(0)}</TableCell>
                           </TableRow>
                         ))}

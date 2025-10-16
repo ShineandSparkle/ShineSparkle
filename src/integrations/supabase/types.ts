@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.12 (cd3cf9e)"
@@ -24,6 +24,7 @@ export type Database = {
           name: string
           phone: string | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           address?: string | null
@@ -34,6 +35,7 @@ export type Database = {
           name: string
           phone?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           address?: string | null
@@ -44,6 +46,79 @@ export type Database = {
           name?: string
           phone?: string | null
           updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      distributor_stock: {
+        Row: {
+          closing: number
+          created_at: string | null
+          id: string
+          month: string
+          opening: number
+          product_name: string
+          production: number
+          sales: number
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          closing?: number
+          created_at?: string | null
+          id?: string
+          month: string
+          opening?: number
+          product_name: string
+          production?: number
+          sales?: number
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          closing?: number
+          created_at?: string | null
+          id?: string
+          month?: string
+          opening?: number
+          product_name?: string
+          production?: number
+          sales?: number
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      indent_sheet_entries: {
+        Row: {
+          created_at: string | null
+          formulation_name: string
+          id: string
+          ingredients: Json
+          month: string
+          quantity: number
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          formulation_name: string
+          id?: string
+          ingredients?: Json
+          month: string
+          quantity?: number
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          formulation_name?: string
+          id?: string
+          ingredients?: Json
+          month?: string
+          quantity?: number
+          updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -62,12 +137,16 @@ export type Database = {
           invoice_number: string
           items: Json
           notes: string | null
+          paid_date: string | null
+          quotation_id: string | null
           status: string
           subtotal: number
           tax_amount: number
           tax_rate: number | null
+          tax_type: string | null
           total_amount: number
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -83,12 +162,16 @@ export type Database = {
           invoice_number: string
           items?: Json
           notes?: string | null
+          paid_date?: string | null
+          quotation_id?: string | null
           status?: string
           subtotal?: number
           tax_amount?: number
           tax_rate?: number | null
+          tax_type?: string | null
           total_amount?: number
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -104,12 +187,16 @@ export type Database = {
           invoice_number?: string
           items?: Json
           notes?: string | null
+          paid_date?: string | null
+          quotation_id?: string | null
           status?: string
           subtotal?: number
           tax_amount?: number
           tax_rate?: number | null
+          tax_type?: string | null
           total_amount?: number
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -117,6 +204,13 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_quotation_id_fkey"
+            columns: ["quotation_id"]
+            isOneToOne: false
+            referencedRelation: "quotations"
             referencedColumns: ["id"]
           },
         ]
@@ -131,6 +225,7 @@ export type Database = {
           notes: string | null
           payment_date: string
           payment_method: string
+          user_id: string | null
         }
         Insert: {
           amount: number
@@ -141,6 +236,7 @@ export type Database = {
           notes?: string | null
           payment_date?: string
           payment_method: string
+          user_id?: string | null
         }
         Update: {
           amount?: number
@@ -151,6 +247,7 @@ export type Database = {
           notes?: string | null
           payment_date?: string
           payment_method?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -161,6 +258,173 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      quotations: {
+        Row: {
+          amount: number
+          created_at: string
+          customer_id: string | null
+          date: string
+          id: string
+          items: Json
+          notes: string | null
+          quotation_number: string
+          status: string
+          subtotal: number
+          tax_amount: number
+          tax_type: string | null
+          updated_at: string
+          user_id: string
+          valid_until: string | null
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          customer_id?: string | null
+          date?: string
+          id?: string
+          items?: Json
+          notes?: string | null
+          quotation_number: string
+          status?: string
+          subtotal?: number
+          tax_amount?: number
+          tax_type?: string | null
+          updated_at?: string
+          user_id: string
+          valid_until?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          customer_id?: string | null
+          date?: string
+          id?: string
+          items?: Json
+          notes?: string | null
+          quotation_number?: string
+          status?: string
+          subtotal?: number
+          tax_amount?: number
+          tax_type?: string | null
+          updated_at?: string
+          user_id?: string
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotations_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      raw_materials_stock: {
+        Row: {
+          chemical_name: string
+          closing: number
+          created_at: string | null
+          id: string
+          month: string
+          opening: number
+          purchased: number
+          updated_at: string | null
+          used: number
+          user_id: string | null
+        }
+        Insert: {
+          chemical_name: string
+          closing?: number
+          created_at?: string | null
+          id?: string
+          month: string
+          opening?: number
+          purchased?: number
+          updated_at?: string | null
+          used?: number
+          user_id?: string | null
+        }
+        Update: {
+          chemical_name?: string
+          closing?: number
+          created_at?: string | null
+          id?: string
+          month?: string
+          opening?: number
+          purchased?: number
+          updated_at?: string | null
+          used?: number
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      settings: {
+        Row: {
+          created_at: string
+          id: string
+          setting_data: Json
+          setting_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          setting_data?: Json
+          setting_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          setting_data?: Json
+          setting_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      warehouse_stock: {
+        Row: {
+          closing: number
+          created_at: string | null
+          id: string
+          month: string
+          opening: number
+          product_name: string
+          production: number
+          sales: number
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          closing?: number
+          created_at?: string | null
+          id?: string
+          month: string
+          opening?: number
+          product_name: string
+          production?: number
+          sales?: number
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          closing?: number
+          created_at?: string | null
+          id?: string
+          month?: string
+          opening?: number
+          product_name?: string
+          production?: number
+          sales?: number
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
     }
     Views: {
