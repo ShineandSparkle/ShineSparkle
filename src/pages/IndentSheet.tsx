@@ -204,7 +204,7 @@ const IndentSheet = () => {
               key={formulation.id}
               className="p-4 flex items-center justify-between bg-white shadow-md rounded-2xl transition-all hover:shadow-lg"
               style={{
-                boxShadow: "inset 6px 0 0 0 #1E293B, 0 4px 10px rgba(0,0,0,0.08)",
+                boxShadow: "inset 6px 0 0 0 #1F44B6, 0 4px 10px rgba(0,0,0,0.08)",
               }}
             >
               <div className="flex flex-col">

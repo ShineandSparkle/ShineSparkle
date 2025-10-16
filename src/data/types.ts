@@ -33,6 +33,7 @@ export interface PricingData {
   minimumOrder?: number;
   retailPrice: number;
   bulkPrice5Ltr?: number;
+  bulkPrice100Gms?: number;
 }
 
 export interface PackingData {
