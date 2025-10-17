@@ -7,24 +7,23 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format, startOfMonth } from "date-fns";
-import { Calendar as CalendarIcon, Printer, ArrowLeft, Plus } from "lucide-react";
+import { Calendar as CalendarIcon, Printer, ArrowLeft, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formulationsData } from "@/data/formulations";
+import { formulationsData, productPricesData } from "@/data/formulations";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 interface StockEntry {
   id: string;
-  date: Date;
   productName: string;
   opening: number;
   production: number;
   sales: number;
   closing: number;
+  amount: number;
 }
 
 interface RawMaterialEntry {
@@ -62,36 +61,57 @@ const chemicalsList = [
   "Urea"
 ];
 
+const getProductPrice = (productName: string): number => {
+  const priceData = productPricesData.find(p => p.product === productName);
+  return priceData?.retailPrice || 0;
+};
+
 const StockRegister = () => {
   const navigate = useNavigate();
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date(2025, 9)); // October 2025
   const [warehouseEntries, setWarehouseEntries] = useState<StockEntry[]>([]);
   const [distributorEntries, setDistributorEntries] = useState<StockEntry[]>([]);
   const [rawMaterialEntries, setRawMaterialEntries] = useState<RawMaterialEntry[]>([]);
+  const [showMonthPicker, setShowMonthPicker] = useState(false);
   
   // Form states for Warehouse Register
-  const [warehouseDate, setWarehouseDate] = useState<Date>(new Date());
   const [warehouseProduct, setWarehouseProduct] = useState<string>("");
-  const [warehouseOpening, setWarehouseOpening] = useState<number>(0);
-  const [warehouseProduction, setWarehouseProduction] = useState<number>(0);
-  const [warehouseSales, setWarehouseSales] = useState<number>(0);
+  const [warehouseOpening, setWarehouseOpening] = useState<string>("");
+  const [warehouseProduction, setWarehouseProduction] = useState<string>("");
+  const [warehouseSales, setWarehouseSales] = useState<string>("");
   
   // Form states for Distributor Inventory
-  const [distributorDate, setDistributorDate] = useState<Date>(new Date());
   const [distributorProduct, setDistributorProduct] = useState<string>("");
-  const [distributorOpening, setDistributorOpening] = useState<number>(0);
-  const [distributorProduction, setDistributorProduction] = useState<number>(0);
-  const [distributorSales, setDistributorSales] = useState<number>(0);
+  const [distributorOpening, setDistributorOpening] = useState<string>("");
+  const [distributorProduction, setDistributorProduction] = useState<string>("");
+  const [distributorSales, setDistributorSales] = useState<string>("");
 
   // Form states for Raw Materials
   const [rawMaterialChemical, setRawMaterialChemical] = useState<string>("");
-  const [rawMaterialOpening, setRawMaterialOpening] = useState<number>(0);
-  const [rawMaterialPurchased, setRawMaterialPurchased] = useState<number>(0);
-  const [rawMaterialUsed, setRawMaterialUsed] = useState<number>(0);
+  const [rawMaterialOpening, setRawMaterialOpening] = useState<string>("");
+  const [rawMaterialPurchased, setRawMaterialPurchased] = useState<string>("");
+  const [rawMaterialUsed, setRawMaterialUsed] = useState<string>("");
 
-  const warehouseClosing = useMemo(() => warehouseOpening + warehouseProduction - warehouseSales, [warehouseOpening, warehouseProduction, warehouseSales]);
-  const distributorClosing = useMemo(() => distributorOpening + distributorProduction - distributorSales, [distributorOpening, distributorProduction, distributorSales]);
-  const rawMaterialClosing = useMemo(() => rawMaterialOpening + rawMaterialPurchased - rawMaterialUsed, [rawMaterialOpening, rawMaterialPurchased, rawMaterialUsed]);
+  const warehouseClosing = useMemo(() => {
+    const opening = parseFloat(warehouseOpening) || 0;
+    const production = parseFloat(warehouseProduction) || 0;
+    const sales = parseFloat(warehouseSales) || 0;
+    return opening + production - sales;
+  }, [warehouseOpening, warehouseProduction, warehouseSales]);
+
+  const distributorClosing = useMemo(() => {
+    const opening = parseFloat(distributorOpening) || 0;
+    const production = parseFloat(distributorProduction) || 0;
+    const sales = parseFloat(distributorSales) || 0;
+    return opening + production - sales;
+  }, [distributorOpening, distributorProduction, distributorSales]);
+
+  const rawMaterialClosing = useMemo(() => {
+    const opening = parseFloat(rawMaterialOpening) || 0;
+    const purchased = parseFloat(rawMaterialPurchased) || 0;
+    const used = parseFloat(rawMaterialUsed) || 0;
+    return opening + purchased - used;
+  }, [rawMaterialOpening, rawMaterialPurchased, rawMaterialUsed]);
 
   // Load entries from database when month changes
   useEffect(() => {
@@ -99,6 +119,64 @@ const StockRegister = () => {
     loadDistributorEntries();
     loadRawMaterialEntries();
   }, [selectedMonth]);
+
+  // Auto-populate opening stock from previous month's closing when product is selected
+  useEffect(() => {
+    if (warehouseProduct) {
+      const previousMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1);
+      const prevMonthStart = startOfMonth(previousMonth);
+      
+      supabase
+        .from('warehouse_stock')
+        .select('closing')
+        .eq('month', format(prevMonthStart, 'yyyy-MM-dd'))
+        .eq('product_name', warehouseProduct)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data && warehouseOpening === "") {
+            setWarehouseOpening(data.closing.toString());
+          }
+        });
+    }
+  }, [warehouseProduct]);
+
+  useEffect(() => {
+    if (distributorProduct) {
+      const previousMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1);
+      const prevMonthStart = startOfMonth(previousMonth);
+      
+      supabase
+        .from('distributor_stock')
+        .select('closing')
+        .eq('month', format(prevMonthStart, 'yyyy-MM-dd'))
+        .eq('product_name', distributorProduct)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data && distributorOpening === "") {
+            setDistributorOpening(data.closing.toString());
+          }
+        });
+    }
+  }, [distributorProduct]);
+
+  useEffect(() => {
+    if (rawMaterialChemical) {
+      const previousMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1);
+      const prevMonthStart = startOfMonth(previousMonth);
+      
+      supabase
+        .from('raw_materials_stock')
+        .select('closing')
+        .eq('month', format(prevMonthStart, 'yyyy-MM-dd'))
+        .eq('chemical_name', rawMaterialChemical)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data && rawMaterialOpening === "") {
+            setRawMaterialOpening(data.closing.toString());
+          }
+        });
+    }
+  }, [rawMaterialChemical]);
 
   const loadWarehouseEntries = async () => {
     const monthStart = startOfMonth(selectedMonth);
@@ -113,15 +191,19 @@ const StockRegister = () => {
     }
     
     if (data) {
-      const entries: StockEntry[] = data.map(entry => ({
-        id: entry.id,
-        date: new Date(entry.month),
-        productName: entry.product_name,
-        opening: Number(entry.opening),
-        production: Number(entry.production),
-        sales: Number(entry.sales),
-        closing: Number(entry.closing)
-      }));
+      const entries: StockEntry[] = data.map(entry => {
+        const closing = Number(entry.closing);
+        const price = getProductPrice(entry.product_name);
+        return {
+          id: entry.id,
+          productName: entry.product_name,
+          opening: Number(entry.opening),
+          production: Number(entry.production),
+          sales: Number(entry.sales),
+          closing: closing,
+          amount: closing * price
+        };
+      });
       setWarehouseEntries(entries);
     }
   };
@@ -139,15 +221,19 @@ const StockRegister = () => {
     }
     
     if (data) {
-      const entries: StockEntry[] = data.map(entry => ({
-        id: entry.id,
-        date: new Date(entry.month),
-        productName: entry.product_name,
-        opening: Number(entry.opening),
-        production: Number(entry.production),
-        sales: Number(entry.sales),
-        closing: Number(entry.closing)
-      }));
+      const entries: StockEntry[] = data.map(entry => {
+        const closing = Number(entry.closing);
+        const price = getProductPrice(entry.product_name);
+        return {
+          id: entry.id,
+          productName: entry.product_name,
+          opening: Number(entry.opening),
+          production: Number(entry.production),
+          sales: Number(entry.sales),
+          closing: closing,
+          amount: closing * price
+        };
+      });
       setDistributorEntries(entries);
     }
   };
@@ -181,16 +267,33 @@ const StockRegister = () => {
     if (!warehouseProduct) return;
     
     const monthStart = startOfMonth(selectedMonth);
+    const opening = parseFloat(warehouseOpening) || 0;
+    const production = parseFloat(warehouseProduction) || 0;
+    const sales = parseFloat(warehouseSales) || 0;
+    const closing = warehouseClosing;
+
+    // Check if entry already exists for this product and month
+    const { data: existing } = await supabase
+      .from('warehouse_stock')
+      .select('id')
+      .eq('month', format(monthStart, 'yyyy-MM-dd'))
+      .eq('product_name', warehouseProduct)
+      .maybeSingle();
+
+    if (existing) {
+      toast.error('Entry already exists for this product in this month');
+      return;
+    }
     
     const { data, error } = await supabase
       .from('warehouse_stock')
       .insert({
         month: format(monthStart, 'yyyy-MM-dd'),
         product_name: warehouseProduct,
-        opening: warehouseOpening,
-        production: warehouseProduction,
-        sales: warehouseSales,
-        closing: warehouseClosing
+        opening: opening,
+        production: production,
+        sales: sales,
+        closing: closing
       })
       .select()
       .single();
@@ -202,14 +305,15 @@ const StockRegister = () => {
     }
     
     if (data) {
+      const price = getProductPrice(data.product_name);
       const newEntry: StockEntry = {
         id: data.id,
-        date: new Date(data.month),
         productName: data.product_name,
         opening: Number(data.opening),
         production: Number(data.production),
         sales: Number(data.sales),
-        closing: Number(data.closing)
+        closing: Number(data.closing),
+        amount: Number(data.closing) * price
       };
       
       setWarehouseEntries([...warehouseEntries, newEntry]);
@@ -217,9 +321,9 @@ const StockRegister = () => {
       
       // Reset form
       setWarehouseProduct("");
-      setWarehouseOpening(0);
-      setWarehouseProduction(0);
-      setWarehouseSales(0);
+      setWarehouseOpening("");
+      setWarehouseProduction("");
+      setWarehouseSales("");
     }
   };
 
@@ -227,16 +331,33 @@ const StockRegister = () => {
     if (!distributorProduct) return;
     
     const monthStart = startOfMonth(selectedMonth);
+    const opening = parseFloat(distributorOpening) || 0;
+    const production = parseFloat(distributorProduction) || 0;
+    const sales = parseFloat(distributorSales) || 0;
+    const closing = distributorClosing;
+
+    // Check if entry already exists for this product and month
+    const { data: existing } = await supabase
+      .from('distributor_stock')
+      .select('id')
+      .eq('month', format(monthStart, 'yyyy-MM-dd'))
+      .eq('product_name', distributorProduct)
+      .maybeSingle();
+
+    if (existing) {
+      toast.error('Entry already exists for this product in this month');
+      return;
+    }
     
     const { data, error } = await supabase
       .from('distributor_stock')
       .insert({
         month: format(monthStart, 'yyyy-MM-dd'),
         product_name: distributorProduct,
-        opening: distributorOpening,
-        production: distributorProduction,
-        sales: distributorSales,
-        closing: distributorClosing
+        opening: opening,
+        production: production,
+        sales: sales,
+        closing: closing
       })
       .select()
       .single();
@@ -248,14 +369,15 @@ const StockRegister = () => {
     }
     
     if (data) {
+      const price = getProductPrice(data.product_name);
       const newEntry: StockEntry = {
         id: data.id,
-        date: new Date(data.month),
         productName: data.product_name,
         opening: Number(data.opening),
         production: Number(data.production),
         sales: Number(data.sales),
-        closing: Number(data.closing)
+        closing: Number(data.closing),
+        amount: Number(data.closing) * price
       };
       
       setDistributorEntries([...distributorEntries, newEntry]);
@@ -263,9 +385,9 @@ const StockRegister = () => {
       
       // Reset form
       setDistributorProduct("");
-      setDistributorOpening(0);
-      setDistributorProduction(0);
-      setDistributorSales(0);
+      setDistributorOpening("");
+      setDistributorProduction("");
+      setDistributorSales("");
     }
   };
 
@@ -273,16 +395,33 @@ const StockRegister = () => {
     if (!rawMaterialChemical) return;
     
     const monthStart = startOfMonth(selectedMonth);
+    const opening = parseFloat(rawMaterialOpening) || 0;
+    const purchased = parseFloat(rawMaterialPurchased) || 0;
+    const used = parseFloat(rawMaterialUsed) || 0;
+    const closing = rawMaterialClosing;
+
+    // Check if entry already exists for this chemical and month
+    const { data: existing } = await supabase
+      .from('raw_materials_stock')
+      .select('id')
+      .eq('month', format(monthStart, 'yyyy-MM-dd'))
+      .eq('chemical_name', rawMaterialChemical)
+      .maybeSingle();
+
+    if (existing) {
+      toast.error('Entry already exists for this chemical in this month');
+      return;
+    }
     
     const { data, error } = await supabase
       .from('raw_materials_stock')
       .insert({
         month: format(monthStart, 'yyyy-MM-dd'),
         chemical_name: rawMaterialChemical,
-        opening: rawMaterialOpening,
-        purchased: rawMaterialPurchased,
-        used: rawMaterialUsed,
-        closing: rawMaterialClosing
+        opening: opening,
+        purchased: purchased,
+        used: used,
+        closing: closing
       })
       .select()
       .single();
@@ -308,9 +447,9 @@ const StockRegister = () => {
       
       // Reset form
       setRawMaterialChemical("");
-      setRawMaterialOpening(0);
-      setRawMaterialPurchased(0);
-      setRawMaterialUsed(0);
+      setRawMaterialOpening("");
+      setRawMaterialPurchased("");
+      setRawMaterialUsed("");
     }
   };
 
@@ -349,7 +488,7 @@ const StockRegister = () => {
           {/* Month Selector */}
           <Card className="p-6 mb-6">
             <h2 className="text-xl font-semibold text-slate-800 mb-4">Select Month</h2>
-            <Popover>
+            <Popover open={showMonthPicker} onOpenChange={setShowMonthPicker}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
@@ -362,13 +501,41 @@ const StockRegister = () => {
                   {selectedMonth ? format(selectedMonth, "MMMM yyyy") : <span>Pick a month</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={selectedMonth}
-                  onSelect={(date) => date && setSelectedMonth(date)}
-                  initialFocus
-                />
+              <PopoverContent className="w-auto p-4">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setSelectedMonth(new Date(selectedMonth.getFullYear() - 1, selectedMonth.getMonth()))}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <div className="font-semibold">{selectedMonth.getFullYear()}</div>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setSelectedMonth(new Date(selectedMonth.getFullYear() + 1, selectedMonth.getMonth()))}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month, index) => (
+                      <Button
+                        key={month}
+                        variant={selectedMonth.getMonth() === index ? "default" : "outline"}
+                        onClick={() => {
+                          setSelectedMonth(new Date(selectedMonth.getFullYear(), index));
+                          setShowMonthPicker(false);
+                        }}
+                        className="w-full"
+                      >
+                        {month}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
               </PopoverContent>
             </Popover>
           </Card>
@@ -384,33 +551,8 @@ const StockRegister = () => {
             {/* Warehouse Tab */}
             <TabsContent value="warehouse">
               <Card className="p-6 mb-6 shadow-lg">
-                <h3 className="text-xl font-semibold text-slate-800 mb-4">Add Warehouse Entry</h3>
+                <h3 className="text-xl font-semibold text-slate-800 mb-4">Add Warehouse Entry - {format(selectedMonth, "MMMM yyyy")}</h3>
                 <div className="flex gap-4 items-end flex-wrap">
-                  <div className="flex flex-col gap-2 min-w-[160px]">
-                    <label className="text-sm font-medium text-slate-700">Date</label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "justify-start text-left font-normal",
-                            !warehouseDate && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {format(warehouseDate, "dd/MM/yyyy")}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <Calendar
-                          mode="single"
-                          selected={warehouseDate}
-                          onSelect={(date) => date && setWarehouseDate(date)}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
 
                   <div className="flex flex-col gap-2 min-w-[180px]">
                     <label className="text-sm font-medium text-slate-700">Product Name</label>
@@ -432,8 +574,8 @@ const StockRegister = () => {
                       type="number"
                       min="0"
                       step="1"
-                      value={warehouseOpening || ""}
-                      onChange={(e) => setWarehouseOpening(parseFloat(e.target.value) || 0)}
+                      value={warehouseOpening}
+                      onChange={(e) => setWarehouseOpening(e.target.value)}
                       className="text-right"
                       onWheel={(e) => e.currentTarget.blur()}
                     />
@@ -445,8 +587,8 @@ const StockRegister = () => {
                       type="number"
                       min="0"
                       step="1"
-                      value={warehouseProduction || ""}
-                      onChange={(e) => setWarehouseProduction(parseFloat(e.target.value) || 0)}
+                      value={warehouseProduction}
+                      onChange={(e) => setWarehouseProduction(e.target.value)}
                       className="text-right"
                       onWheel={(e) => e.currentTarget.blur()}
                     />
@@ -458,8 +600,8 @@ const StockRegister = () => {
                       type="number"
                       min="0"
                       step="1"
-                      value={warehouseSales || ""}
-                      onChange={(e) => setWarehouseSales(parseFloat(e.target.value) || 0)}
+                      value={warehouseSales}
+                      onChange={(e) => setWarehouseSales(e.target.value)}
                       className="text-right"
                       onWheel={(e) => e.currentTarget.blur()}
                     />
@@ -486,28 +628,28 @@ const StockRegister = () => {
               {/* Warehouse Entries Table */}
               {warehouseEntries.length > 0 && (
                 <Card className="p-6 shadow-lg">
-                  <h3 className="text-xl font-semibold text-slate-800 mb-4">Warehouse Stock Entries</h3>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-4">Warehouse Stock Entries - {format(selectedMonth, "MMMM yyyy")}</h3>
                   <div className="overflow-x-auto">
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Date</TableHead>
                           <TableHead>Product Name</TableHead>
                           <TableHead className="text-right">Opening</TableHead>
                           <TableHead className="text-right">Production</TableHead>
                           <TableHead className="text-right">Sales</TableHead>
                           <TableHead className="text-right">Closing</TableHead>
+                          <TableHead className="text-right">Amount (₹)</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {warehouseEntries.map((entry) => (
                           <TableRow key={entry.id}>
-                            <TableCell>{format(entry.date, "dd/MM/yyyy")}</TableCell>
                             <TableCell className="font-medium">{entry.productName}</TableCell>
                             <TableCell className="text-right">{entry.opening.toFixed(0)}</TableCell>
                             <TableCell className="text-right">{entry.production.toFixed(0)}</TableCell>
                             <TableCell className="text-right">{entry.sales.toFixed(0)}</TableCell>
                             <TableCell className="text-right font-semibold">{entry.closing.toFixed(0)}</TableCell>
+                            <TableCell className="text-right font-semibold text-primary">{entry.amount.toFixed(2)}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -520,33 +662,8 @@ const StockRegister = () => {
             {/* Distributor Tab */}
             <TabsContent value="distributor">
               <Card className="p-6 mb-6 shadow-lg">
-                <h3 className="text-xl font-semibold text-slate-800 mb-4">Add Distributor Entry</h3>
+                <h3 className="text-xl font-semibold text-slate-800 mb-4">Add Distributor Entry - {format(selectedMonth, "MMMM yyyy")}</h3>
                 <div className="flex gap-4 items-end flex-wrap">
-                  <div className="flex flex-col gap-2 min-w-[160px]">
-                    <label className="text-sm font-medium text-slate-700">Date</label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "justify-start text-left font-normal",
-                            !distributorDate && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {format(distributorDate, "dd/MM/yyyy")}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <Calendar
-                          mode="single"
-                          selected={distributorDate}
-                          onSelect={(date) => date && setDistributorDate(date)}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
 
                   <div className="flex flex-col gap-2 min-w-[180px]">
                     <label className="text-sm font-medium text-slate-700">Product Name</label>
@@ -568,8 +685,8 @@ const StockRegister = () => {
                       type="number"
                       min="0"
                       step="1"
-                      value={distributorOpening || ""}
-                      onChange={(e) => setDistributorOpening(parseFloat(e.target.value) || 0)}
+                      value={distributorOpening}
+                      onChange={(e) => setDistributorOpening(e.target.value)}
                       className="text-right"
                       onWheel={(e) => e.currentTarget.blur()}
                     />
@@ -581,8 +698,8 @@ const StockRegister = () => {
                       type="number"
                       min="0"
                       step="1"
-                      value={distributorProduction || ""}
-                      onChange={(e) => setDistributorProduction(parseFloat(e.target.value) || 0)}
+                      value={distributorProduction}
+                      onChange={(e) => setDistributorProduction(e.target.value)}
                       className="text-right"
                       onWheel={(e) => e.currentTarget.blur()}
                     />
@@ -594,8 +711,8 @@ const StockRegister = () => {
                       type="number"
                       min="0"
                       step="1"
-                      value={distributorSales || ""}
-                      onChange={(e) => setDistributorSales(parseFloat(e.target.value) || 0)}
+                      value={distributorSales}
+                      onChange={(e) => setDistributorSales(e.target.value)}
                       className="text-right"
                       onWheel={(e) => e.currentTarget.blur()}
                     />
@@ -622,28 +739,28 @@ const StockRegister = () => {
               {/* Distributor Entries Table */}
               {distributorEntries.length > 0 && (
                 <Card className="p-6 shadow-lg">
-                  <h3 className="text-xl font-semibold text-slate-800 mb-4">Distributor Stock Entries</h3>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-4">Distributor Stock Entries - {format(selectedMonth, "MMMM yyyy")}</h3>
                   <div className="overflow-x-auto">
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Date</TableHead>
                           <TableHead>Product Name</TableHead>
                           <TableHead className="text-right">Opening</TableHead>
                           <TableHead className="text-right">Production</TableHead>
                           <TableHead className="text-right">Sales</TableHead>
                           <TableHead className="text-right">Closing</TableHead>
+                          <TableHead className="text-right">Amount (₹)</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {distributorEntries.map((entry) => (
                           <TableRow key={entry.id}>
-                            <TableCell>{format(entry.date, "dd/MM/yyyy")}</TableCell>
                             <TableCell className="font-medium">{entry.productName}</TableCell>
                             <TableCell className="text-right">{entry.opening.toFixed(0)}</TableCell>
                             <TableCell className="text-right">{entry.production.toFixed(0)}</TableCell>
                             <TableCell className="text-right">{entry.sales.toFixed(0)}</TableCell>
                             <TableCell className="text-right font-semibold">{entry.closing.toFixed(0)}</TableCell>
+                            <TableCell className="text-right font-semibold text-primary">{entry.amount.toFixed(2)}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -656,7 +773,7 @@ const StockRegister = () => {
             {/* Raw Materials Tab */}
             <TabsContent value="rawmaterials">
               <Card className="p-6 mb-6 shadow-lg">
-                <h3 className="text-xl font-semibold text-slate-800 mb-4">Add Raw Material Entry</h3>
+                <h3 className="text-xl font-semibold text-slate-800 mb-4">Add Raw Material Entry - {format(selectedMonth, "MMMM yyyy")}</h3>
                 <div className="flex gap-4 items-end flex-wrap">
                   <div className="flex flex-col gap-2 min-w-[200px]">
                     <label className="text-sm font-medium text-slate-700">Chemical Name</label>
@@ -678,8 +795,8 @@ const StockRegister = () => {
                       type="number"
                       min="0"
                       step="1"
-                      value={rawMaterialOpening || ""}
-                      onChange={(e) => setRawMaterialOpening(parseFloat(e.target.value) || 0)}
+                      value={rawMaterialOpening}
+                      onChange={(e) => setRawMaterialOpening(e.target.value)}
                       className="text-right"
                       onWheel={(e) => e.currentTarget.blur()}
                     />
@@ -691,8 +808,8 @@ const StockRegister = () => {
                       type="number"
                       min="0"
                       step="1"
-                      value={rawMaterialPurchased || ""}
-                      onChange={(e) => setRawMaterialPurchased(parseFloat(e.target.value) || 0)}
+                      value={rawMaterialPurchased}
+                      onChange={(e) => setRawMaterialPurchased(e.target.value)}
                       className="text-right"
                       onWheel={(e) => e.currentTarget.blur()}
                     />
@@ -704,8 +821,8 @@ const StockRegister = () => {
                       type="number"
                       min="0"
                       step="1"
-                      value={rawMaterialUsed || ""}
-                      onChange={(e) => setRawMaterialUsed(parseFloat(e.target.value) || 0)}
+                      value={rawMaterialUsed}
+                      onChange={(e) => setRawMaterialUsed(e.target.value)}
                       className="text-right"
                       onWheel={(e) => e.currentTarget.blur()}
                     />
@@ -732,7 +849,7 @@ const StockRegister = () => {
               {/* Raw Material Entries Table */}
               {rawMaterialEntries.length > 0 && (
                 <Card className="p-6 shadow-lg">
-                  <h3 className="text-xl font-semibold text-slate-800 mb-4">Raw Material Stock Entries</h3>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-4">Raw Material Stock Entries - {format(selectedMonth, "MMMM yyyy")}</h3>
                   <div className="overflow-x-auto">
                     <Table>
                       <TableHeader>

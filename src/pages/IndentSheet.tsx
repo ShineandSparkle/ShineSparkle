@@ -5,12 +5,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formulationsData } from "@/data/formulations";
 import { format, startOfMonth } from "date-fns";
-import { Calendar as CalendarIcon, Save } from "lucide-react";
+import { Calendar as CalendarIcon, Save, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -36,6 +35,7 @@ const formatNumber = (num: number): string => {
 const IndentSheet = () => {
   const [quantities, setQuantities] = useState<QuantityInput>({});
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
+  const [showMonthPicker, setShowMonthPicker] = useState(false);
 
   const handleQuantityChange = (formulationId: number, value: string) => {
     const numValue = parseFloat(value) || 0;
@@ -168,7 +168,7 @@ const IndentSheet = () => {
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-4xl font-bold text-slate-800">Indent Sheet</h1>
           <div className="flex gap-4 items-center">
-            <Popover>
+            <Popover open={showMonthPicker} onOpenChange={setShowMonthPicker}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
@@ -181,13 +181,41 @@ const IndentSheet = () => {
                   {selectedMonth ? format(selectedMonth, "MMMM yyyy") : <span>Pick a month</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={selectedMonth}
-                  onSelect={(date) => date && setSelectedMonth(date)}
-                  initialFocus
-                />
+              <PopoverContent className="w-auto p-4">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setSelectedMonth(new Date(selectedMonth.getFullYear() - 1, selectedMonth.getMonth()))}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <div className="font-semibold">{selectedMonth.getFullYear()}</div>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setSelectedMonth(new Date(selectedMonth.getFullYear() + 1, selectedMonth.getMonth()))}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month, index) => (
+                      <Button
+                        key={month}
+                        variant={selectedMonth.getMonth() === index ? "default" : "outline"}
+                        onClick={() => {
+                          setSelectedMonth(new Date(selectedMonth.getFullYear(), index));
+                          setShowMonthPicker(false);
+                        }}
+                        className="w-full"
+                      >
+                        {month}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
               </PopoverContent>
             </Popover>
             <Button onClick={handleSaveIndent} className="gap-2">
