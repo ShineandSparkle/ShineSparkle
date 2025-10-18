@@ -42,6 +42,12 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+// Correct helper function
+const getChemicalPrice = (name: string) => {
+  const chemical = chemicalPrices.find((c) => c.chemical === name);
+  return chemical ? chemical.rate : 0; // fallback to 0 if not found
+};
+
 // external libs for export — ensure installed: xlsx, jspdf, jspdf-autotable
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
@@ -73,20 +79,7 @@ const getProductPrice = (productName: string): number => {
   return priceData?.retailPrice || 0;
 };
 
-const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 const StockRegister: React.FC = () => {
   const navigate = useNavigate();
@@ -994,78 +987,75 @@ const StockRegister: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-{/* Month Selector Card */}
-<Card className="p-6 text-center flex flex-col">
-  <div className="text-2xl font-semibold text-black mb-6">Select Month</div>
+            {/* Month Selector Card */}
+            <Card className="p-6 text-center flex flex-col">
+              <div className="text-2xl font-semibold text-black mb-6">Select Month</div>
 
-  <div className="flex justify-center">
-    <Popover open={showMonthPicker} onOpenChange={setShowMonthPicker}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          className={cn(
-            "w-56 justify-start text-left font-normal",
-            !selectedMonth && "text-muted-foreground"
-          )}
-        >
-          <CalendarIcon className="mr-2 h-4 w-4" />
-          {selectedMonth ? format(selectedMonth, "MMMM yyyy") : <span>Pick a month</span>}
-        </Button>
-      </PopoverTrigger>
+              <div className="flex justify-center">
+                <Popover open={showMonthPicker} onOpenChange={setShowMonthPicker}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-56 justify-start text-left font-normal",
+                        !selectedMonth && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {selectedMonth ? format(selectedMonth, "MMMM yyyy") : <span>Pick a month</span>}
+                    </Button>
+                  </PopoverTrigger>
 
-      <PopoverContent className="w-auto p-4">
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() =>
-                setSelectedMonth(
-                  new Date(selectedMonth.getFullYear() - 1, selectedMonth.getMonth())
-                )
-              }
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
+                  <PopoverContent className="w-auto p-4">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() =>
+                            setSelectedMonth(
+                              new Date(selectedMonth.getFullYear() - 1, selectedMonth.getMonth())
+                            )
+                          }
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                        </Button>
 
-            <div className="font-semibold">{selectedMonth.getFullYear()}</div>
+                        <div className="font-semibold">{selectedMonth.getFullYear()}</div>
 
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() =>
-                setSelectedMonth(
-                  new Date(selectedMonth.getFullYear() + 1, selectedMonth.getMonth())
-                )
-              }
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() =>
+                            setSelectedMonth(
+                              new Date(selectedMonth.getFullYear() + 1, selectedMonth.getMonth())
+                            )
+                          }
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </div>
 
-          <div className="grid grid-cols-3 gap-2">
-            {MONTHS.map((month, index) => (
-              <Button
-                key={month}
-                variant={selectedMonth.getMonth() === index ? "default" : "outline"}
-                onClick={() => {
-                  setSelectedMonth(new Date(selectedMonth.getFullYear(), index));
-                  setShowMonthPicker(false);
-                }}
-                className="w-full"
-              >
-                {month}
-              </Button>
-            ))}
-          </div>
-        </div>
-      </PopoverContent>
-    </Popover>
-  </div>
-</Card>
-
-
-
+                      <div className="grid grid-cols-3 gap-2">
+                        {MONTHS.map((month, index) => (
+                          <Button
+                            key={month}
+                            variant={selectedMonth.getMonth() === index ? "default" : "outline"}
+                            onClick={() => {
+                              setSelectedMonth(new Date(selectedMonth.getFullYear(), index));
+                              setShowMonthPicker(false);
+                            }}
+                            className="w-full"
+                          >
+                            {month}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </Card>
 
             {/* Warehouse Summary Card */}
               <Card className="p-4">
@@ -1140,20 +1130,16 @@ const StockRegister: React.FC = () => {
                 </div>
 
                 <Card className="p-4 mt-4 flex flex-col items-center justify-center min-h-[150px]">
-  {/* Total Closing Qty */}
-  <div className="flex flex-col items-center justify-center text-sm text-muted-foreground">
-    <div>Total Closing Qty</div>
-    <div className="text-2xl font-semibold text-black mt-1">
-      {formatNumber(rawMaterialTotals.totalClosing)}
-    </div>
-  </div>
-</Card>
-
+                {/* Total Closing Qty */}
+                <div className="flex flex-col items-center justify-center text-sm text-muted-foreground">
+                  <div>Total Closing Qty</div>
+                  <div className="text-2xl font-semibold text-black mt-1">
+                    {formatNumber(rawMaterialTotals.totalClosing)}
+                  </div>
+                </div>
               </Card>
-
-
+              </Card>
           </div>
-
 
           {/* Tabs */}
           <Tabs defaultValue="warehouse" className="w-full">
@@ -1426,7 +1412,9 @@ const StockRegister: React.FC = () => {
 
               {rawMaterialEntries.length > 0 && (
                 <Card className="p-6 shadow-lg">
-                  <h3 className="text-xl font-semibold text-slate-800 mb-4">Raw Material Stock Entries - {format(selectedMonth, "MMMM yyyy")}</h3>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-4">
+                    Raw Material Stock Entries - {format(selectedMonth, "MMMM yyyy")}
+                  </h3>
                   <div className="overflow-x-auto">
                     <Table>
                       <TableHeader>
@@ -1436,25 +1424,37 @@ const StockRegister: React.FC = () => {
                           <TableHead className="text-right">Purchased</TableHead>
                           <TableHead className="text-right">Used</TableHead>
                           <TableHead className="text-right">Closing</TableHead>
+                          <TableHead className="text-right">Used Amount</TableHead>
+                          <TableHead className="text-right">Closing Amount</TableHead>
                           <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {rawMaterialEntries.map((entry) => (
-                          <TableRow key={entry.id}>
-                            <TableCell className="font-medium">{entry.chemicalName}</TableCell>
-                            <TableCell className="text-right">{entry.opening.toFixed(0)}</TableCell>
-                            <TableCell className="text-right">{entry.purchased.toFixed(0)}</TableCell>
-                            <TableCell className="text-right">{entry.used.toFixed(0)}</TableCell>
-                            <TableCell className="text-right font-semibold">{entry.closing.toFixed(0)}</TableCell>
-                            <TableCell className="text-right">
-                              <div className="flex justify-end gap-2">
-                                <Button size="icon" variant="ghost" onClick={() => beginEdit("rawmaterials", entry)}><Edit className="h-4 w-4"/></Button>
-                                <Button size="icon" variant="destructive" onClick={() => beginDelete("rawmaterials", entry.id)}><Trash className="h-4 w-4"/></Button>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                        {rawMaterialEntries.map((entry) => {
+                          const usedAmount = entry.used * entry.chemicalPrice;
+                          const closingAmount = entry.closing * entry.chemicalPrice;
+                          return (
+                            <TableRow key={entry.id}>
+                              <TableCell className="font-medium">{entry.chemicalName}</TableCell>
+                              <TableCell className="text-right">{entry.opening.toFixed(2)}</TableCell>
+                              <TableCell className="text-right">{entry.purchased.toFixed(2)}</TableCell>
+                              <TableCell className="text-right">{entry.used.toFixed(2)}</TableCell>
+                              <TableCell className="text-right">{entry.closing.toFixed(2)}</TableCell>
+                              <TableCell className="text-right font-semibold">{usedAmount.toFixed(2)}</TableCell>
+                              <TableCell className="text-right font-semibold">{closingAmount.toFixed(2)}</TableCell>
+                              <TableCell className="text-right">
+                                <div className="flex justify-end gap-2">
+                                  <Button size="icon" variant="ghost" onClick={() => beginEdit("rawmaterials", entry)}>
+                                    <Edit className="h-4 w-4" />
+                                  </Button>
+                                  <Button size="icon" variant="destructive" onClick={() => beginDelete("rawmaterials", entry.id)}>
+                                    <Trash className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
 
                         {/* Totals row */}
                         <TableRow>
@@ -1462,7 +1462,17 @@ const StockRegister: React.FC = () => {
                           <TableCell />
                           <TableCell />
                           <TableCell />
-                          <TableCell className="text-right font-semibold">{rawMaterialTotals.totalClosing.toFixed(0)}</TableCell>
+                          <TableCell />
+                          <TableCell className="text-right font-semibold">
+                            {rawMaterialEntries
+                              .reduce((sum, entry) => sum + entry.used * entry.chemicalPrices, 0)
+                              .toFixed(2)}
+                          </TableCell>
+                          <TableCell className="text-right font-semibold">
+                            {rawMaterialEntries
+                              .reduce((sum, entry) => sum + entry.closing * entry.chemicalPrices, 0)
+                              .toFixed(2)}
+                          </TableCell>
                           <TableCell />
                         </TableRow>
                       </TableBody>
