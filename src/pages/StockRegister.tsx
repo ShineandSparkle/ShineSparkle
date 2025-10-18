@@ -54,6 +54,7 @@ interface StockEntry {
   production: number;
   sales: number;
   closing: number;
+  soldAmount: number;
   amount: number;
 }
 
@@ -165,11 +166,13 @@ const StockRegister: React.FC = () => {
     loadRawMaterialEntries();
   }, [selectedMonth]);
 
-  // auto-populate opening from previous month - warehoue
+  // auto-populate opening from previous month - warehouse
   useEffect(() => {
-    if (!warehouseProduct) return;
+    if (!warehouseProduct || editing.type === "warehouse") return;
+    
     const previousMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1);
     const prevMonthStart = startOfMonth(previousMonth);
+    
     supabase
       .from("warehouse_stock")
       .select("closing")
@@ -181,17 +184,21 @@ const StockRegister: React.FC = () => {
           console.error("Prev month fetch error:", error);
           return;
         }
-        if (data && warehouseOpening === "") {
+        if (data) {
           setWarehouseOpening(data.closing?.toString() ?? "0");
+        } else {
+          setWarehouseOpening("0");
         }
       });
-  }, [warehouseProduct]);
+  }, [warehouseProduct, selectedMonth]);
 
   // distributor previous closing auto-populate
   useEffect(() => {
-    if (!distributorProduct) return;
+    if (!distributorProduct || editing.type === "distributor") return;
+    
     const previousMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1);
     const prevMonthStart = startOfMonth(previousMonth);
+    
     supabase
       .from("distributor_stock")
       .select("closing")
@@ -203,17 +210,21 @@ const StockRegister: React.FC = () => {
           console.error("Prev month distributor fetch error:", error);
           return;
         }
-        if (data && distributorOpening === "") {
+        if (data) {
           setDistributorOpening(data.closing?.toString() ?? "0");
+        } else {
+          setDistributorOpening("0");
         }
       });
-  }, [distributorProduct]);
+  }, [distributorProduct, selectedMonth]);
 
   // raw materials previous closing auto-populate
   useEffect(() => {
-    if (!rawMaterialChemical) return;
+    if (!rawMaterialChemical || editing.type === "rawmaterials") return;
+    
     const previousMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1);
     const prevMonthStart = startOfMonth(previousMonth);
+    
     supabase
       .from("raw_materials_stock")
       .select("closing")
@@ -225,11 +236,13 @@ const StockRegister: React.FC = () => {
           console.error("Prev month raw material fetch error:", error);
           return;
         }
-        if (data && rawMaterialOpening === "") {
+        if (data) {
           setRawMaterialOpening(data.closing?.toString() ?? "0");
+        } else {
+          setRawMaterialOpening("0");
         }
       });
-  }, [rawMaterialChemical]);
+  }, [rawMaterialChemical, selectedMonth]);
 
   // -------------------------
   // Loaders (same fields & structure)
@@ -250,16 +263,19 @@ const StockRegister: React.FC = () => {
       if (res.data) {
         const entries: StockEntry[] = res.data.map((entry: any) => {
           const closing = Number(entry.closing);
+          const sales = Number(entry.sales);
           // price lookup
           const price = getProductPrice(entry.product_name);
+          const soldAmount = sales * price;
           const amount = closing * price;
           return {
             id: entry.id,
             productName: entry.product_name,
             opening: Number(entry.opening),
             production: Number(entry.production),
-            sales: Number(entry.sales),
+            sales: sales,
             closing: closing,
+            soldAmount: soldAmount,
             amount: amount,
           };
         });
@@ -286,14 +302,17 @@ const StockRegister: React.FC = () => {
       if (res.data) {
         const entries: StockEntry[] = res.data.map((entry: any) => {
           const closing = Number(entry.closing);
+          const sales = Number(entry.sales);
           const price = getProductPrice(entry.product_name);
+          const soldAmount = sales * price;
           return {
             id: entry.id,
             productName: entry.product_name,
             opening: Number(entry.opening),
             production: Number(entry.production),
-            sales: Number(entry.sales),
+            sales: sales,
             closing: closing,
+            soldAmount: soldAmount,
             amount: closing * price,
           };
         });
@@ -382,14 +401,17 @@ const StockRegister: React.FC = () => {
 
     if (data) {
       const price = getProductPrice(data.product_name);
+      const sales = Number(data.sales);
+      const closing = Number(data.closing);
       const newEntry: StockEntry = {
         id: data.id,
         productName: data.product_name,
         opening: Number(data.opening),
         production: Number(data.production),
-        sales: Number(data.sales),
-        closing: Number(data.closing),
-        amount: Number(data.closing) * price,
+        sales: sales,
+        closing: closing,
+        soldAmount: sales * price,
+        amount: closing * price,
       };
       setWarehouseEntries((prev) => [...prev, newEntry]);
       toast.success("Warehouse entry added successfully");
@@ -446,14 +468,17 @@ const StockRegister: React.FC = () => {
 
     if (data) {
       const price = getProductPrice(data.product_name);
+      const sales = Number(data.sales);
+      const closing = Number(data.closing);
       const newEntry: StockEntry = {
         id: data.id,
         productName: data.product_name,
         opening: Number(data.opening),
         production: Number(data.production),
-        sales: Number(data.sales),
-        closing: Number(data.closing),
-        amount: Number(data.closing) * price,
+        sales: sales,
+        closing: closing,
+        soldAmount: sales * price,
+        amount: closing * price,
       };
       setDistributorEntries((prev) => [...prev, newEntry]);
       toast.success("Distributor entry added successfully");
@@ -585,6 +610,9 @@ const StockRegister: React.FC = () => {
       }
 
       // update local state (same representation)
+      const price = getProductPrice(data.product_name);
+      const salesNum = Number(data.sales);
+      const closingNum = Number(data.closing);
       setWarehouseEntries((prev) =>
         prev.map((e) =>
           e.id === editing.id
@@ -593,9 +621,10 @@ const StockRegister: React.FC = () => {
                 productName: data.product_name,
                 opening: Number(data.opening),
                 production: Number(data.production),
-                sales: Number(data.sales),
-                closing: Number(data.closing),
-                amount: Number(data.closing) * getProductPrice(data.product_name),
+                sales: salesNum,
+                closing: closingNum,
+                soldAmount: salesNum * price,
+                amount: closingNum * price,
               }
             : e
         )
@@ -627,6 +656,9 @@ const StockRegister: React.FC = () => {
         return;
       }
 
+      const price = getProductPrice(data.product_name);
+      const salesNum = Number(data.sales);
+      const closingNum = Number(data.closing);
       setDistributorEntries((prev) =>
         prev.map((e) =>
           e.id === editing.id
@@ -635,9 +667,10 @@ const StockRegister: React.FC = () => {
                 productName: data.product_name,
                 opening: Number(data.opening),
                 production: Number(data.production),
-                sales: Number(data.sales),
-                closing: Number(data.closing),
-                amount: Number(data.closing) * getProductPrice(data.product_name),
+                sales: salesNum,
+                closing: closingNum,
+                soldAmount: salesNum * price,
+                amount: closingNum * price,
               }
             : e
         )
@@ -748,25 +781,29 @@ const StockRegister: React.FC = () => {
   // Totals & summary calculations
   // -------------------------
   const warehouseTotals = useMemo(() => {
-    // sum closing and amount
+    // sum closing, sold amount, and amount
     let totalClosing = 0;
+    let totalSoldAmount = 0;
     let totalAmount = 0;
     for (const e of warehouseEntries) {
       // careful numeric addition
       totalClosing = totalClosing + Number(e.closing || 0);
+      totalSoldAmount = totalSoldAmount + Number(e.soldAmount || 0);
       totalAmount = totalAmount + Number(e.amount || 0);
     }
-    return { totalClosing, totalAmount };
+    return { totalClosing, totalSoldAmount, totalAmount };
   }, [warehouseEntries]);
 
   const distributorTotals = useMemo(() => {
     let totalClosing = 0;
+    let totalSoldAmount = 0;
     let totalAmount = 0;
     for (const e of distributorEntries) {
       totalClosing = totalClosing + Number(e.closing || 0);
+      totalSoldAmount = totalSoldAmount + Number(e.soldAmount || 0);
       totalAmount = totalAmount + Number(e.amount || 0);
     }
-    return { totalClosing, totalAmount };
+    return { totalClosing, totalSoldAmount, totalAmount };
   }, [distributorEntries]);
 
   const rawMaterialTotals = useMemo(() => {
@@ -782,16 +819,17 @@ const StockRegister: React.FC = () => {
   // -------------------------
   const exportWarehouseToExcel = () => {
     const wsData = [
-      ["Product Name", "Opening", "Production", "Sales", "Closing", "Amount (₹)"],
+      ["Product Name", "Opening", "Production", "Sales", "Closing", "Sold Amount (₹)", "Amount (₹)"],
       ...warehouseEntries.map((e) => [
         e.productName,
         e.opening,
         e.production,
         e.sales,
         e.closing,
+        e.soldAmount,
         e.amount,
       ]),
-      ["Totals", "", "", "", warehouseTotals.totalClosing, warehouseTotals.totalAmount],
+      ["Totals", "", "", "", warehouseTotals.totalClosing, warehouseTotals.totalSoldAmount, warehouseTotals.totalAmount],
     ];
     const ws = XLSX.utils.aoa_to_sheet(wsData);
     const wb = XLSX.utils.book_new();
@@ -801,16 +839,17 @@ const StockRegister: React.FC = () => {
 
   const exportDistributorToExcel = () => {
     const wsData = [
-      ["Product Name", "Opening", "Production", "Sales", "Closing", "Amount (₹)"],
+      ["Product Name", "Opening", "Production", "Sales", "Closing", "Sold Amount (₹)", "Amount (₹)"],
       ...distributorEntries.map((e) => [
         e.productName,
         e.opening,
         e.production,
         e.sales,
         e.closing,
+        e.soldAmount,
         e.amount,
       ]),
-      ["Totals", "", "", "", distributorTotals.totalClosing, distributorTotals.totalAmount],
+      ["Totals", "", "", "", distributorTotals.totalClosing, distributorTotals.totalSoldAmount, distributorTotals.totalAmount],
     ];
     const ws = XLSX.utils.aoa_to_sheet(wsData);
     const wb = XLSX.utils.book_new();
@@ -847,16 +886,17 @@ const StockRegister: React.FC = () => {
     doc.text("Warehouse", 14, 26);
     (doc as any).autoTable({
       startY: 28,
-      head: [["Product", "Opening", "Production", "Sales", "Closing", "Amount (₹)"]],
+      head: [["Product", "Opening", "Production", "Sales", "Closing", "Sold Amt (₹)", "Amount (₹)"]],
       body: warehouseEntries.map((e) => [
         e.productName,
         e.opening,
         e.production,
         e.sales,
         e.closing,
+        e.soldAmount.toFixed(2),
         e.amount.toFixed(2),
       ]),
-      foot: [["Totals", "", "", "", warehouseTotals.totalClosing, warehouseTotals.totalAmount.toFixed(2)]],
+      foot: [["Totals", "", "", "", warehouseTotals.totalClosing, warehouseTotals.totalSoldAmount.toFixed(2), warehouseTotals.totalAmount.toFixed(2)]],
       theme: "grid",
     });
 
@@ -865,16 +905,17 @@ const StockRegister: React.FC = () => {
     doc.text("Distributor", 14, afterWarehouseY);
     (doc as any).autoTable({
       startY: afterWarehouseY + 2,
-      head: [["Product", "Opening", "Production", "Sales", "Closing", "Amount (₹)"]],
+      head: [["Product", "Opening", "Production", "Sales", "Closing", "Sold Amt (₹)", "Amount (₹)"]],
       body: distributorEntries.map((e) => [
         e.productName,
         e.opening,
         e.production,
         e.sales,
         e.closing,
+        e.soldAmount.toFixed(2),
         e.amount.toFixed(2),
       ]),
-      foot: [["Totals", "", "", "", distributorTotals.totalClosing, distributorTotals.totalAmount.toFixed(2)]],
+      foot: [["Totals", "", "", "", distributorTotals.totalClosing, distributorTotals.totalSoldAmount.toFixed(2), distributorTotals.totalAmount.toFixed(2)]],
       theme: "grid",
     });
 
@@ -1101,6 +1142,7 @@ const StockRegister: React.FC = () => {
                           <TableHead className="text-right">Production</TableHead>
                           <TableHead className="text-right">Sales</TableHead>
                           <TableHead className="text-right">Closing</TableHead>
+                          <TableHead className="text-right">Sold Amount (₹)</TableHead>
                           <TableHead className="text-right">Amount (₹)</TableHead>
                           <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
@@ -1113,6 +1155,7 @@ const StockRegister: React.FC = () => {
                             <TableCell className="text-right">{entry.production.toFixed(0)}</TableCell>
                             <TableCell className="text-right">{entry.sales.toFixed(0)}</TableCell>
                             <TableCell className="text-right font-semibold">{entry.closing.toFixed(0)}</TableCell>
+                            <TableCell className="text-right font-semibold text-primary">{entry.soldAmount.toFixed(2)}</TableCell>
                             <TableCell className="text-right font-semibold text-primary">{entry.amount.toFixed(2)}</TableCell>
                             <TableCell className="text-right">
                               <div className="flex justify-end gap-2">
@@ -1130,6 +1173,7 @@ const StockRegister: React.FC = () => {
                           <TableCell />
                           <TableCell />
                           <TableCell className="text-right font-semibold">{warehouseTotals.totalClosing.toFixed(0)}</TableCell>
+                          <TableCell className="text-right font-semibold text-primary">{warehouseTotals.totalSoldAmount.toFixed(2)}</TableCell>
                           <TableCell className="text-right font-semibold text-primary">{warehouseTotals.totalAmount.toFixed(2)}</TableCell>
                           <TableCell />
                         </TableRow>
@@ -1198,6 +1242,7 @@ const StockRegister: React.FC = () => {
                           <TableHead className="text-right">Production</TableHead>
                           <TableHead className="text-right">Sales</TableHead>
                           <TableHead className="text-right">Closing</TableHead>
+                          <TableHead className="text-right">Sold Amount (₹)</TableHead>
                           <TableHead className="text-right">Amount (₹)</TableHead>
                           <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
@@ -1210,6 +1255,7 @@ const StockRegister: React.FC = () => {
                             <TableCell className="text-right">{entry.production.toFixed(0)}</TableCell>
                             <TableCell className="text-right">{entry.sales.toFixed(0)}</TableCell>
                             <TableCell className="text-right font-semibold">{entry.closing.toFixed(0)}</TableCell>
+                            <TableCell className="text-right font-semibold text-primary">{entry.soldAmount.toFixed(2)}</TableCell>
                             <TableCell className="text-right font-semibold text-primary">{entry.amount.toFixed(2)}</TableCell>
                             <TableCell className="text-right">
                               <div className="flex justify-end gap-2">
@@ -1227,6 +1273,7 @@ const StockRegister: React.FC = () => {
                           <TableCell />
                           <TableCell />
                           <TableCell className="text-right font-semibold">{distributorTotals.totalClosing.toFixed(0)}</TableCell>
+                          <TableCell className="text-right font-semibold text-primary">{distributorTotals.totalSoldAmount.toFixed(2)}</TableCell>
                           <TableCell className="text-right font-semibold text-primary">{distributorTotals.totalAmount.toFixed(2)}</TableCell>
                           <TableCell />
                         </TableRow>
