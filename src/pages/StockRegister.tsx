@@ -993,95 +993,189 @@ const StockRegister: React.FC = () => {
             </div>
           </div>
 
-          {/* Month Selector */}
-          <Card className="p-6 mb-6">
-            <h2 className="text-xl font-semibold text-slate-800 mb-4">Select Month</h2>
-            <Popover open={showMonthPicker} onOpenChange={setShowMonthPicker}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-[280px] justify-start text-left font-normal",
-                    !selectedMonth && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {selectedMonth ? format(selectedMonth, "MMMM yyyy") : <span>Pick a month</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-4">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() =>
-                        setSelectedMonth(
-                          new Date(selectedMonth.getFullYear() - 1, selectedMonth.getMonth())
-                        )
-                      }
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <div className="font-semibold">{selectedMonth.getFullYear()}</div>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() =>
-                        setSelectedMonth(
-                          new Date(selectedMonth.getFullYear() + 1, selectedMonth.getMonth())
-                        )
-                      }
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    {MONTHS.map((month, index) => (
-                      <Button
-                        key={month}
-                        variant={selectedMonth.getMonth() === index ? "default" : "outline"}
-                        onClick={() => {
-                          setSelectedMonth(new Date(selectedMonth.getFullYear(), index));
-                          setShowMonthPicker(false);
-                        }}
-                        className="w-full"
-                      >
-                        {month}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
-          </Card>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+{/* Month Selector Card */}
+<Card className="p-6 text-center flex flex-col">
+  <div className="text-2xl font-semibold text-black mb-6">Select Month</div>
 
-          {/* Summary cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <Card className="p-4">
-              <div className="text-sm text-muted-foreground">Warehouse - Total Closing Qty</div>
-              <div className="text-2xl font-semibold">{formatNumber(warehouseTotals.totalClosing)}</div>
-              <div className="text-sm text-muted-foreground">Value ₹ {formatNumber(warehouseTotals.totalAmount)}</div>
-            </Card>
+  <div className="flex justify-center">
+    <Popover open={showMonthPicker} onOpenChange={setShowMonthPicker}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          className={cn(
+            "w-56 justify-start text-left font-normal",
+            !selectedMonth && "text-muted-foreground"
+          )}
+        >
+          <CalendarIcon className="mr-2 h-4 w-4" />
+          {selectedMonth ? format(selectedMonth, "MMMM yyyy") : <span>Pick a month</span>}
+        </Button>
+      </PopoverTrigger>
 
-            <Card className="p-4">
-              <div className="text-sm text-muted-foreground">Distributor - Total Closing Qty</div>
-              <div className="text-2xl font-semibold">{formatNumber(distributorTotals.totalClosing)}</div>
-              <div className="text-sm text-muted-foreground">Value ₹ {formatNumber(distributorTotals.totalAmount)}</div>
-            </Card>
+      <PopoverContent className="w-auto p-4">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() =>
+                setSelectedMonth(
+                  new Date(selectedMonth.getFullYear() - 1, selectedMonth.getMonth())
+                )
+              }
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
 
-            <Card className="p-4">
-              <div className="text-sm text-muted-foreground">Raw Materials - Total Closing Qty</div>
-              <div className="text-2xl font-semibold">{formatNumber(rawMaterialTotals.totalClosing)}</div>
-            </Card>
+            <div className="font-semibold">{selectedMonth.getFullYear()}</div>
+
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() =>
+                setSelectedMonth(
+                  new Date(selectedMonth.getFullYear() + 1, selectedMonth.getMonth())
+                )
+              }
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
           </div>
+
+          <div className="grid grid-cols-3 gap-2">
+            {MONTHS.map((month, index) => (
+              <Button
+                key={month}
+                variant={selectedMonth.getMonth() === index ? "default" : "outline"}
+                onClick={() => {
+                  setSelectedMonth(new Date(selectedMonth.getFullYear(), index));
+                  setShowMonthPicker(false);
+                }}
+                className="w-full"
+              >
+                {month}
+              </Button>
+            ))}
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
+  </div>
+</Card>
+
+
+
+
+            {/* Warehouse Summary Card */}
+              <Card className="p-4">
+                <div className="text-center">
+                  <div className="text-2xl font-semibold text-black">Warehouse</div>
+                </div>
+
+                <Card className="p-4 mt-4">
+                  {/* Total Closing Qty */}
+                  <div className="flex flex-col items-center text-sm text-muted-foreground mt-1">
+                    <div>Total Closing Qty</div>
+                    <div className="text-2xl font-semibold text-black mt-1">
+                      {formatNumber(warehouseTotals.totalClosing)}
+                    </div>
+                  </div>
+
+                  {/* Total Value and Sold Amount */}
+                  <div className="flex justify-between mt-6">
+                    <div className="flex flex-col items-center">
+                      <div className="text-sm text-muted-foreground">Total Value ₹</div>
+                      <div className="text-2xl font-semibold text-black mt-1">
+                        {formatNumber(warehouseTotals.totalAmount)}
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <div className="text-sm text-muted-foreground">Sold Amount ₹</div>
+                      <div className="text-2xl font-semibold text-black mt-1">
+                        {formatNumber(warehouseTotals.totalSoldAmount)}
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </Card>
+
+              {/* Distributor Summary Card */}
+              <Card className="p-4">
+                <div className="text-center">
+                  <div className="text-2xl font-semibold text-black">Distributor</div>
+                </div>
+
+                <Card className="p-4 mt-4">
+                  {/* Total Closing Qty */}
+                  <div className="flex flex-col items-center text-sm text-muted-foreground mt-1">
+                    <div>Total Closing Qty</div>
+                    <div className="text-2xl font-semibold text-black mt-1">
+                      {formatNumber(distributorTotals.totalClosing)}
+                    </div>
+                  </div>
+
+                  {/* Total Value and Sold Amount */}
+                  <div className="flex justify-between mt-6">
+                    <div className="flex flex-col items-center">
+                      <div className="text-sm text-muted-foreground">Total Value ₹</div>
+                      <div className="text-2xl font-semibold text-black mt-1">
+                        {formatNumber(distributorTotals.totalAmount)}
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <div className="text-sm text-muted-foreground">Sold Amount ₹</div>
+                      <div className="text-2xl font-semibold text-black mt-1">
+                        {formatNumber(distributorTotals.totalSoldAmount)}
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </Card>
+
+              {/* Raw Materials Summary Card */}
+              <Card className="p-4">
+                <div className="text-center">
+                  <div className="text-2xl font-semibold text-black">Raw Materials</div>
+                </div>
+
+                <Card className="p-4 mt-4 flex flex-col items-center justify-center min-h-[150px]">
+  {/* Total Closing Qty */}
+  <div className="flex flex-col items-center justify-center text-sm text-muted-foreground">
+    <div>Total Closing Qty</div>
+    <div className="text-2xl font-semibold text-black mt-1">
+      {formatNumber(rawMaterialTotals.totalClosing)}
+    </div>
+  </div>
+</Card>
+
+              </Card>
+
+
+          </div>
+
 
           {/* Tabs */}
           <Tabs defaultValue="warehouse" className="w-full">
             <TabsList className="grid w-full grid-cols-3 mb-6">
-              <TabsTrigger value="warehouse" className="text-lg">Warehouse</TabsTrigger>
-              <TabsTrigger value="distributor" className="text-lg">Distributor</TabsTrigger>
-              <TabsTrigger value="rawmaterials" className="text-lg">Raw Materials</TabsTrigger>
+              <TabsTrigger
+                value="warehouse"
+                className="text-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white bg-white text-black"
+              >
+                Warehouse
+              </TabsTrigger>
+              <TabsTrigger
+                value="distributor"
+                className="text-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white bg-white text-black"
+              >
+                Distributor
+              </TabsTrigger>
+              <TabsTrigger
+                value="rawmaterials"
+                className="text-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white bg-white text-black"
+              >
+                Raw Materials
+              </TabsTrigger>
             </TabsList>
 
             {/* Warehouse Tab */}
