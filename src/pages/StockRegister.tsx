@@ -36,7 +36,8 @@ import {
   Download,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formulationsData, productPricesData } from "@/data/formulations";
+import { formulationsData } from "@/data/formulations";
+import { productPricesData, chemicalPrices } from "@/data/pricingData";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -65,31 +66,6 @@ interface RawMaterialEntry {
   closing: number;
 }
 
-const chemicalsList = [
-  "Acid (Hydrochloric acid)",
-  "Acid Slurry",
-  "Alphox 200",
-  "AOS (Alpha Olefin Sulphonate)",
-  "BKC (Benzalkonium Chloride)",
-  "CAPB (Cocamidopropyl Betaine)",
-  "Caustic Soda",
-  "Citric Acid",
-  "Colour",
-  "Cutting Oil",
-  "Glycerine",
-  "Hand Wash Base",
-  "IPA (Isopropyl Alcohol)",
-  "Perfume - Jasmine - Phenyl",
-  "Phenyl Compound",
-  "Pine Oil",
-  "SLES (Sodium Lauryl Ether Sulfate)",
-  "Soap Oil",
-  "Soda Ash (Sodium carbonate)",
-  "SS (Sodium Sulphate) - Global Salt",
-  "TRO (Turkey Red Oil)",
-  "TSP (Trisodium Phosphate)",
-  "Urea",
-];
 
 const getProductPrice = (productName: string): number => {
   const priceData = productPricesData.find((p) => p.product === productName);
@@ -200,13 +176,14 @@ const StockRegister: React.FC = () => {
       .eq("month", format(prevMonthStart, "yyyy-MM-dd"))
       .eq("product_name", warehouseProduct)
       .maybeSingle()
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) {
+          console.error("Prev month fetch error:", error);
+          return;
+        }
         if (data && warehouseOpening === "") {
           setWarehouseOpening(data.closing?.toString() ?? "0");
         }
-      })
-      .catch((err) => {
-        console.error("Prev month fetch error:", err);
       });
   }, [warehouseProduct]);
 
@@ -221,13 +198,14 @@ const StockRegister: React.FC = () => {
       .eq("month", format(prevMonthStart, "yyyy-MM-dd"))
       .eq("product_name", distributorProduct)
       .maybeSingle()
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) {
+          console.error("Prev month distributor fetch error:", error);
+          return;
+        }
         if (data && distributorOpening === "") {
           setDistributorOpening(data.closing?.toString() ?? "0");
         }
-      })
-      .catch((err) => {
-        console.error("Prev month distributor fetch error:", err);
       });
   }, [distributorProduct]);
 
@@ -242,13 +220,14 @@ const StockRegister: React.FC = () => {
       .eq("month", format(prevMonthStart, "yyyy-MM-dd"))
       .eq("chemical_name", rawMaterialChemical)
       .maybeSingle()
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) {
+          console.error("Prev month raw material fetch error:", error);
+          return;
+        }
         if (data && rawMaterialOpening === "") {
           setRawMaterialOpening(data.closing?.toString() ?? "0");
         }
-      })
-      .catch((err) => {
-        console.error("Prev month raw material fetch error:", err);
       });
   }, [rawMaterialChemical]);
 
@@ -736,7 +715,7 @@ const StockRegister: React.FC = () => {
   const confirmDelete = async () => {
     if (!deleting.type || !deleting.id) return;
     try {
-      let tableName = "";
+      let tableName: "warehouse_stock" | "distributor_stock" | "raw_materials_stock" = "warehouse_stock";
       if (deleting.type === "warehouse") tableName = "warehouse_stock";
       if (deleting.type === "distributor") tableName = "distributor_stock";
       if (deleting.type === "rawmaterials") tableName = "raw_materials_stock";
@@ -1268,8 +1247,8 @@ const StockRegister: React.FC = () => {
                     <Select value={rawMaterialChemical} onValueChange={setRawMaterialChemical}>
                       <SelectTrigger><SelectValue placeholder="Select chemical" /></SelectTrigger>
                       <SelectContent>
-                        {chemicalsList.map((chemical) => (
-                          <SelectItem key={chemical} value={chemical}>{chemical}</SelectItem>
+                        {chemicalPrices.map((chemical) => (
+                          <SelectItem key={chemical.chemical} value={chemical.chemical}>{chemical.chemical}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
