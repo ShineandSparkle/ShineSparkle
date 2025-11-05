@@ -21,7 +21,7 @@ export const phenylFormulation: FormulationData = {
   costPer5L: 0, // Auto-calculated
   costPer500MLBottle: null,
   costPer1LBottle: 6.00,
-  costPer5LBottle: 21.00,
+  costPer5LBottle: 35.00,
   methodOfPreparation: [
     "Take clean water in mixing tank",
     "Add phenyl concentrate slowly while stirring",

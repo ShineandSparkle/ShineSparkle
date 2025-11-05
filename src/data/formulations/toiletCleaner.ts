@@ -20,7 +20,7 @@ export const toiletCleanerFormulation: FormulationData = {
   costPer5L: 0, // Auto-calculated
   costPer500MLBottle: null,
   costPer1LBottle: 19.00,
-  costPer5LBottle: 21.00,
+  costPer5LBottle: 35.00,
   methodOfPreparation: [
     "Start RO water in a suitable mixing container.",
     "Add color to the water and stir thoroughly to ensure uniform dispersion.",

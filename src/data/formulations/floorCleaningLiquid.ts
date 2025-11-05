@@ -19,9 +19,9 @@ export const floorCleaningFormulation: FormulationData = {
   costPer500ML: 0, // Auto-calculated
   costPer1L: 0, // Auto-calculated
   costPer5L: 0, // Auto-calculated
-  costPer500MLBottle: 10.00,
+  costPer500MLBottle: null,
   costPer1LBottle: 16.00,
-  costPer5LBottle: null,
+  costPer5LBottle: 35,
   methodOfPreparation: [
     "Mix water and BKC",
     "Add SLES for cleaning action",

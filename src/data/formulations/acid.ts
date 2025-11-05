@@ -17,7 +17,7 @@ export const acidFormulation: FormulationData = {
   costPer5L: 0, // Auto-calculated
   costPer500MLBottle: null,
   costPer1LBottle: 6.00,
-  costPer5LBottle: 21.00,
+  costPer5LBottle: 35.00,
   methodOfPreparation: [
     "Carefully add hydrochloric acid to a acid-resistant vessel",
     "Add color for identification",
