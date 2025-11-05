@@ -1431,8 +1431,9 @@ const StockRegister: React.FC = () => {
                       </TableHeader>
                       <TableBody>
                         {rawMaterialEntries.map((entry) => {
-                          const usedAmount = entry.used * entry.chemicalPrice;
-                          const closingAmount = entry.closing * entry.chemicalPrice;
+                          const chemicalPrice = getChemicalPrice(entry.chemicalName);
+                          const usedAmount = entry.used * chemicalPrice;
+                          const closingAmount = entry.closing * chemicalPrice;
                           return (
                             <TableRow key={entry.id}>
                               <TableCell className="font-medium">{entry.chemicalName}</TableCell>
@@ -1465,12 +1466,12 @@ const StockRegister: React.FC = () => {
                           <TableCell />
                           <TableCell className="text-right font-semibold">
                             {rawMaterialEntries
-                              .reduce((sum, entry) => sum + entry.used * entry.chemicalPrices, 0)
+                              .reduce((sum, entry) => sum + entry.used * getChemicalPrice(entry.chemicalName), 0)
                               .toFixed(2)}
                           </TableCell>
                           <TableCell className="text-right font-semibold">
                             {rawMaterialEntries
-                              .reduce((sum, entry) => sum + entry.closing * entry.chemicalPrices, 0)
+                              .reduce((sum, entry) => sum + entry.closing * getChemicalPrice(entry.chemicalName), 0)
                               .toFixed(2)}
                           </TableCell>
                           <TableCell />
