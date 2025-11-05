@@ -278,11 +278,11 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <Header />
       
-      <main className="py-12 px-6">
+      <main className="py-6 sm:py-12 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
           {/* Hero Section */}
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-slate-800 mb-4">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 mb-4">
               Invoice Management System
             </h2>
             {/*<p className="text-xl text-slate-600 max-w-3xl mx-auto">
@@ -296,37 +296,37 @@ const Index = () => {
               <p className="text-slate-600">Loading data...</p>
             </div>
           ) : (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <Card className="text-center p-6 bg-white/70 backdrop-blur-sm">
-              <FileText className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-              <h3 className="text-2xl font-bold text-blue-600 mb-1">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
+            <Card className="text-center p-3 sm:p-6 bg-white/70 backdrop-blur-sm">
+              <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 mx-auto mb-1 sm:mb-2" />
+              <h3 className="text-lg sm:text-2xl font-bold text-blue-600 mb-1">
                 {invoices.length}
               </h3>
-              <p className="text-slate-600">Total Invoices</p>
+              <p className="text-xs sm:text-sm text-slate-600">Total Invoices</p>
             </Card>
 
-            <Card className="text-center p-6 bg-white/70 backdrop-blur-sm">
-              <CreditCard className="h-8 w-8 text-green-600 mx-auto mb-2" />
-              <h3 className="text-2xl font-bold text-green-600 mb-1">
+            <Card className="text-center p-3 sm:p-6 bg-white/70 backdrop-blur-sm">
+              <CreditCard className="h-6 w-6 sm:h-8 sm:w-8 text-green-600 mx-auto mb-1 sm:mb-2" />
+              <h3 className="text-lg sm:text-2xl font-bold text-green-600 mb-1">
                 ₹{totalPayments.toLocaleString()}
               </h3>
-              <p className="text-slate-600">Payments Received</p>
+              <p className="text-xs sm:text-sm text-slate-600">Payments Received</p>
             </Card>
 
-            <Card className="text-center p-6 bg-white/70 backdrop-blur-sm">
-              <FileText className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-              <h3 className="text-2xl font-bold text-orange-600 mb-1">
+            <Card className="text-center p-3 sm:p-6 bg-white/70 backdrop-blur-sm">
+              <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-orange-600 mx-auto mb-1 sm:mb-2" />
+              <h3 className="text-lg sm:text-2xl font-bold text-orange-600 mb-1">
                 ₹{pendingAmount.toLocaleString()}
               </h3>
-              <p className="text-slate-600">Pending Payments</p>
+              <p className="text-xs sm:text-sm text-slate-600">Pending Payments</p>
             </Card>
 
-            <Card className="text-center p-6 bg-white/70 backdrop-blur-sm">
-              <Users className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-              <h3 className="text-2xl font-bold text-purple-600 mb-1">
+            <Card className="text-center p-3 sm:p-6 bg-white/70 backdrop-blur-sm">
+              <Users className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600 mx-auto mb-1 sm:mb-2" />
+              <h3 className="text-lg sm:text-2xl font-bold text-purple-600 mb-1">
                 {customers.length}
               </h3>
-              <p className="text-slate-600">Active Customers</p>
+              <p className="text-xs sm:text-sm text-slate-600">Active Customers</p>
             </Card>
           </div>
           )}

@@ -1166,54 +1166,54 @@ const StockRegister: React.FC = () => {
 
             {/* Warehouse Tab */}
             <TabsContent value="warehouse">
-              <Card className="p-6 mb-6 shadow-lg">
-                <div className="flex gap-4 items-end flex-wrap">
-                  <div className="flex flex-col gap-2 min-w-[180px]">
-                    <label className="text-sm font-medium text-slate-700">Product Name</label>
+              <Card className="p-3 sm:p-6 mb-4 sm:mb-6 shadow-lg">
+                <div className="flex gap-2 sm:gap-4 items-end flex-wrap">
+                  <div className="flex flex-col gap-2 min-w-[140px] sm:min-w-[180px] flex-1">
+                    <label className="text-xs sm:text-sm font-medium text-slate-700">Product Name</label>
                     <Select value={warehouseProduct} onValueChange={setWarehouseProduct}>
-                      <SelectTrigger><SelectValue placeholder="Select product" /></SelectTrigger>
-                      <SelectContent>
+                      <SelectTrigger className="text-xs sm:text-sm"><SelectValue placeholder="Select product" /></SelectTrigger>
+                      <SelectContent className="bg-white z-50">
                         {formulationsData.map((f) => (
-                          <SelectItem key={f.id} value={f.name}>{f.name}</SelectItem>
+                          <SelectItem key={f.id} value={f.name} className="text-xs sm:text-sm">{f.name}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
 
-                  <div className="flex flex-col gap-2 min-w-[120px]">
-                    <label className="text-sm font-medium text-slate-700">Opening</label>
-                    <Input type="number" min="0" step="1" value={warehouseOpening} onChange={(e) => setWarehouseOpening(e.target.value)} className="text-right" onWheel={(e) => e.currentTarget.blur()} />
+                  <div className="flex flex-col gap-2 min-w-[80px] sm:min-w-[120px]">
+                    <label className="text-xs sm:text-sm font-medium text-slate-700">Opening</label>
+                    <Input type="number" min="0" step="1" value={warehouseOpening} onChange={(e) => setWarehouseOpening(e.target.value)} className="text-right text-xs sm:text-sm" onWheel={(e) => e.currentTarget.blur()} />
                   </div>
 
-                  <div className="flex flex-col gap-2 min-w-[120px]">
-                    <label className="text-sm font-medium text-slate-700">Production</label>
-                    <Input type="number" min="0" step="1" value={warehouseProduction} onChange={(e) => setWarehouseProduction(e.target.value)} className="text-right" onWheel={(e) => e.currentTarget.blur()} />
+                  <div className="flex flex-col gap-2 min-w-[80px] sm:min-w-[120px]">
+                    <label className="text-xs sm:text-sm font-medium text-slate-700">Production</label>
+                    <Input type="number" min="0" step="1" value={warehouseProduction} onChange={(e) => setWarehouseProduction(e.target.value)} className="text-right text-xs sm:text-sm" onWheel={(e) => e.currentTarget.blur()} />
                   </div>
 
-                  <div className="flex flex-col gap-2 min-w-[120px]">
-                    <label className="text-sm font-medium text-slate-700">Sales</label>
-                    <Input type="number" min="0" step="1" value={warehouseSales} onChange={(e) => setWarehouseSales(e.target.value)} className="text-right" onWheel={(e) => e.currentTarget.blur()} />
+                  <div className="flex flex-col gap-2 min-w-[80px] sm:min-w-[120px]">
+                    <label className="text-xs sm:text-sm font-medium text-slate-700">Sales</label>
+                    <Input type="number" min="0" step="1" value={warehouseSales} onChange={(e) => setWarehouseSales(e.target.value)} className="text-right text-xs sm:text-sm" onWheel={(e) => e.currentTarget.blur()} />
                   </div>
 
-                  <div className="flex flex-col gap-2 min-w-[120px]">
-                    <label className="text-sm font-medium text-slate-700">Closing</label>
-                    <Input type="number" value={warehouseClosing} readOnly className="text-right bg-slate-100" onWheel={(e) => e.currentTarget.blur()} />
+                  <div className="flex flex-col gap-2 min-w-[80px] sm:min-w-[120px]">
+                    <label className="text-xs sm:text-sm font-medium text-slate-700">Closing</label>
+                    <Input type="number" value={warehouseClosing} readOnly className="text-right bg-slate-100 text-xs sm:text-sm" onWheel={(e) => e.currentTarget.blur()} />
                   </div>
 
-                  <div className="flex gap-2">
-                    <Button onClick={handleAddWarehouseEntry} className="gap-2"><Plus className="h-4 w-4"/> Add</Button>
+                  <div className="flex gap-2 w-full sm:w-auto">
+                    <Button onClick={handleAddWarehouseEntry} className="gap-1 sm:gap-2 text-xs sm:text-sm flex-1 sm:flex-none"><Plus className="h-3 w-3 sm:h-4 sm:w-4"/> Add</Button>
                     {editing.type === "warehouse" && editing.id && (
-                      <Button variant="secondary" onClick={handleSaveEdit} className="gap-2"><Edit className="h-4 w-4"/> Save Edit</Button>
+                      <Button variant="secondary" onClick={handleSaveEdit} className="gap-1 sm:gap-2 text-xs sm:text-sm flex-1 sm:flex-none"><Edit className="h-3 w-3 sm:h-4 sm:w-4"/> Save</Button>
                     )}
                   </div>
                 </div>
               </Card>
 
               {warehouseEntries.length > 0 && (
-                <Card className="p-6 shadow-lg">
-                  <h3 className="text-xl font-semibold text-slate-800 mb-4">Warehouse Stock Entries - {format(selectedMonth, "MMMM yyyy")}</h3>
-                  <div className="overflow-x-auto">
-                    <Table>
+                <Card className="p-3 sm:p-6 shadow-lg">
+                  <h3 className="text-base sm:text-xl font-semibold text-slate-800 mb-3 sm:mb-4">Warehouse Stock Entries - {format(selectedMonth, "MMMM yyyy")}</h3>
+                  <div className="overflow-x-auto -mx-3 sm:mx-0">
+                    <Table className="text-xs sm:text-sm">
                       <TableHeader>
                         <TableRow>
                           <TableHead>Product Name</TableHead>

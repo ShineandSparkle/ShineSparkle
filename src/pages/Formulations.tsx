@@ -216,21 +216,21 @@ const Formulations = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <Header />
       
-      <main className="py-12 px-6">
+      <main className="py-6 sm:py-12 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
           {/* Hero Section */}
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-slate-800 mb-4">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
               Professional Cleaning Formulations
             </h2>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+            <p className="text-base sm:text-lg lg:text-xl text-slate-600 max-w-3xl mx-auto px-4">
               Comprehensive cleaning formulation management system with detailed 
               recipes, cost analysis, and manufacturing instructions
             </p>
           </div>
 
           {/* Dashboard Grid - Changed from 5x3 to 3x5 */}
-          <div id="formulations" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+          <div id="formulations" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-12 sm:mb-16">
             {formulations.map((formulation) => {
               const IconComponent = formulation.icon;
               return (
@@ -239,20 +239,20 @@ const Formulations = () => {
                   className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer border-2 hover:border-blue-300"
                   onClick={() => handleFormulationClick(formulation)}
                 >
-                  <CardContent className="p-6 text-center">
-                    <div className={`${formulation.color} w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                      <IconComponent className="h-8 w-8 text-white" />
+                  <CardContent className="p-4 sm:p-6 text-center">
+                    <div className={`${formulation.color} w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                      <IconComponent className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
                     </div>
-                    <h3 className="font-semibold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors">
+                    <h3 className="font-semibold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors text-sm sm:text-base">
                       {formulation.name}
                     </h3>
-                    <p className="text-sm text-slate-500 group-hover:text-slate-600 transition-colors">
+                    <p className="text-xs sm:text-sm text-slate-500 group-hover:text-slate-600 transition-colors">
                       {formulation.description}
                     </p>
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="mt-4 w-full group-hover:bg-blue-50 group-hover:border-blue-300 transition-colors"
+                      className="mt-3 sm:mt-4 w-full group-hover:bg-blue-50 group-hover:border-blue-300 transition-colors text-xs sm:text-sm"
                     >
                       View Details
                     </Button>
@@ -263,18 +263,18 @@ const Formulations = () => {
           </div>
 
           {/* Stats Section */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="text-center p-6 bg-white/70 backdrop-blur-sm">
-              <h3 className="text-3xl font-bold text-blue-600 mb-2">12+</h3>
-              <p className="text-slate-600">Product Formulations</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+            <Card className="text-center p-4 sm:p-6 bg-white/70 backdrop-blur-sm">
+              <h3 className="text-2xl sm:text-3xl font-bold text-blue-600 mb-2">12+</h3>
+              <p className="text-slate-600 text-sm sm:text-base">Product Formulations</p>
             </Card>
-            <Card className="text-center p-6 bg-white/70 backdrop-blur-sm">
-              <h3 className="text-3xl font-bold text-green-600 mb-2">15</h3>
-              <p className="text-slate-600">Dashboard Categories</p>
+            <Card className="text-center p-4 sm:p-6 bg-white/70 backdrop-blur-sm">
+              <h3 className="text-2xl sm:text-3xl font-bold text-green-600 mb-2">15</h3>
+              <p className="text-slate-600 text-sm sm:text-base">Dashboard Categories</p>
             </Card>
-            <Card className="text-center p-6 bg-white/70 backdrop-blur-sm">
-              <h3 className="text-3xl font-bold text-purple-600 mb-2">99.9%</h3>
-              <p className="text-slate-600">Efficacy Rate</p>
+            <Card className="text-center p-4 sm:p-6 bg-white/70 backdrop-blur-sm">
+              <h3 className="text-2xl sm:text-3xl font-bold text-purple-600 mb-2">99.9%</h3>
+              <p className="text-slate-600 text-sm sm:text-base">Efficacy Rate</p>
             </Card>
           </div>
         </div>
