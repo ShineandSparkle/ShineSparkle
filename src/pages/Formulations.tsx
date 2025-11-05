@@ -5,24 +5,16 @@ import {
   Droplets, 
   Sparkles, 
   SprayCanIcon, 
-  Car, 
   Home, 
   Utensils, 
   Shirt, 
   Bath, 
   Shield, 
-  Zap, 
   Leaf, 
   FlaskConical, 
-  Truck, 
-  Building,
   DollarSign,
   Package,
-  Calculator,
-  Upload,
-  Download,
-  FileSpreadsheet,
-  FileText
+  Calculator
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
@@ -30,7 +22,6 @@ import Footer from "@/components/Footer";
 import { getFormulationBySlug } from "@/data/formulations";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
 
 const Formulations = () => {
   const navigate = useNavigate();
@@ -75,7 +66,7 @@ const Formulations = () => {
   };
 
   const exportToPDF = () => {
-    const doc = new jsPDF();
+    const doc = new jsPDF('p', 'mm', 'a4'); // Explicitly set A4 format
     
     // Company header
     doc.setFontSize(16);
@@ -111,15 +102,14 @@ const Formulations = () => {
       
       // Calculate total cost from ingredients
       const totalCost = formulation.ingredients?.reduce((sum, ing) => sum + parseFloat(ing.amount.toFixed(2)), 0) || 0;
-      const baseYield = formulation.baseYield || 10; // Default to 10 liters if not specified
+      const baseYield = formulation.baseYield || 10;
       
-      // Calculate costs per different volumes
+      // Calculate costs
       const costPerLiter = totalCost / baseYield;
       const costPer500ML = (costPerLiter * 0.5);
       const costPer1L = costPerLiter;
-      const costPer5L = (costPerLiter * 5);
       
-      // Bottle costs (assuming bottle costs from formulation data or default)
+      // Bottle costs
       const bottle500MLCost = formulation.costPer500MLBottle || 10.55;
       const bottle1LCost = formulation.costPer1LBottle || 0;
       
@@ -141,6 +131,7 @@ const Formulations = () => {
         tableData.push(['', '', '', '', '', 0]);
       }
       
+      // Main ingredients table - width 160mm to fit A4 (210mm - 20mm margins)
       autoTable(doc, {
         startY: yPosition,
         head: [['SL.NO', 'PARTICULARS', 'UOM', 'QTY', 'RATE', 'AMOUNT']],
@@ -149,53 +140,53 @@ const Formulations = () => {
         styles: { fontSize: 9, cellPadding: 2 },
         headStyles: { fillColor: [100, 100, 100], textColor: 255, fontStyle: 'bold' },
         columnStyles: {
-          0: { halign: 'center', cellWidth: 15 },
-          1: { cellWidth: 50 },
+          0: { halign: 'center', cellWidth: 20 },
+          1: { cellWidth: 60 },
           2: { halign: 'center', cellWidth: 20 },
           3: { halign: 'center', cellWidth: 20 },
-          4: { halign: 'right', cellWidth: 25 },
-          5: { halign: 'right', cellWidth: 30 }
-        }
+          4: { halign: 'right', cellWidth: 20 },
+          5: { halign: 'right', cellWidth: 20 }
+        },
+        margin: { left: 25 }
       });
       
       yPosition = (doc as any).lastAutoTable.finalY + 5;
       
-      // Cost summary with proper currency symbol and formatting
-      doc.setFontSize(10);
-      doc.setFont(undefined, 'bold');
-      
-      // Cost per bottle row
+      // Cost summary tables - matching the same total width (160mm)
+      // Cost per 500 ML bottle
       autoTable(doc, {
         startY: yPosition,
         body: [
-          ['Cost / Per 500 ML Bottle', `₹ ${totalCostPer500MLBottle.toFixed(2)}`, bottle500MLCost.toFixed(2), totalCost.toFixed(2)]
+          ['Cost / Per 500 ML Bottle', `₹  ${costPer500ML.toFixed(2)}`, bottle500MLCost.toFixed(2), totalCostPer500MLBottle.toFixed(2)]
         ],
         theme: 'grid',
         styles: { fontSize: 10, cellPadding: 2 },
         columnStyles: {
           0: { cellWidth: 80, fontStyle: 'bold' },
-          1: { cellWidth: 40, halign: 'center', fontStyle: 'bold' },
-          2: { cellWidth: 30, halign: 'center' },
-          3: { cellWidth: 30, halign: 'right' }
-        }
+          1: { cellWidth: 30, halign: 'center', fontStyle: 'bold' },
+          2: { cellWidth: 25, halign: 'center' },
+          3: { cellWidth: 25, halign: 'right' }
+        },
+        margin: { left: 25 }
       });
       
       yPosition = (doc as any).lastAutoTable.finalY + 2;
       
-      // Cost per 1L bottle and cost per liter row
+      // Cost per 1L bottle and cost per liter
       autoTable(doc, {
         startY: yPosition,
         body: [
-          ['Cost / Per 1 Ltr Bottle', `₹ ${totalCostPer1LBottle.toFixed(2)}`, 'Cost / Ltr', costPerLiter.toFixed(2)]
+          ['Cost / Per 1 Ltr Bottle', `₹  ${costPer1L.toFixed(2)}`, 'Cost / Ltr', totalCostPer1LBottle.toFixed(2)]
         ],
         theme: 'grid',
         styles: { fontSize: 10, cellPadding: 2 },
         columnStyles: {
           0: { cellWidth: 80, fontStyle: 'bold' },
-          1: { cellWidth: 40, halign: 'center', fontStyle: 'bold' },
-          2: { cellWidth: 30, halign: 'center', fontStyle: 'bold' },
-          3: { cellWidth: 30, halign: 'right' }
-        }
+          1: { cellWidth: 30, halign: 'center', fontStyle: 'bold' },
+          2: { cellWidth: 25, halign: 'center', fontStyle: 'bold' },
+          3: { cellWidth: 25, halign: 'right' }
+        },
+        margin: { left: 25 }
       });
       
       yPosition = (doc as any).lastAutoTable.finalY + 15;
@@ -210,8 +201,8 @@ const Formulations = () => {
         doc.setFontSize(9);
         doc.setFont(undefined, 'normal');
         formulation.methodOfPreparation.forEach((step, i) => {
-          const wrappedText = doc.splitTextToSize(`${i + 1}. ${step}`, 170);
-          doc.text(wrappedText, 20, yPosition);
+          const wrappedText = doc.splitTextToSize(`${i + 1}. ${step}`, 160);
+          doc.text(wrappedText, 25, yPosition);
           yPosition += wrappedText.length * 5 + 2;
         });
       }
@@ -220,84 +211,6 @@ const Formulations = () => {
     doc.save('Formulations.pdf');
   };
 
-  const exportToExcel = () => {
-    const workbook = XLSX.utils.book_new();
-    
-    // Get all formulations data
-    const allFormulationsData = formulations
-      .filter(f => f.id <= 12) // Only actual formulations, not pricing pages
-      .map(f => {
-        const formData = getFormulationBySlug(f.slug);
-        return formData ? { ...f, ...formData } : null;
-      })
-      .filter(Boolean);
-
-    allFormulationsData.forEach(formulation => {
-      // Calculate costs from ingredients
-      const totalCost = formulation.ingredients?.reduce((sum, ing) => sum + parseFloat(ing.amount.toFixed(2)), 0) || 0;
-      const baseYield = formulation.baseYield || 10;
-      const costPerLiter = totalCost / baseYield;
-      const costPer500ML = (costPerLiter * 0.5);
-      const costPer1L = costPerLiter;
-      
-      const bottle500MLCost = formulation.costPer500MLBottle || 10.55;
-      const bottle1LCost = formulation.costPer1LBottle || 0;
-      
-      const totalCostPer500MLBottle = costPer500ML + bottle500MLCost;
-      const totalCostPer1LBottle = costPer1L + bottle1LCost;
-      
-      const worksheetData = [
-        ['SPARKLE & SHINE'],
-        ['FLAT NO - 202, RK RESIDENCY, HARITHA ROYAL CITY COLONY, RAVALKOLE, MEDCHAL - 501401'],
-        [''],
-        [formulation.name],
-        [''],
-        ['SL.NO', 'PARTICULARS', 'UOM', 'QTY', 'RATE', 'AMOUNT'],
-        ...(formulation.ingredients?.map(ing => [
-          ing.slNo,
-          ing.particulars,
-          ing.uom,
-          parseFloat(ing.qty.toFixed(2)),
-          parseFloat(ing.rate.toFixed(2)),
-          parseFloat(ing.amount.toFixed(2))
-        ]) || []),
-        // Add empty rows to reach 10 total
-        ...Array(Math.max(0, 10 - (formulation.ingredients?.length || 0))).fill(['', '', '', '', '', 0]),
-        [''],
-        ['Cost / Per 500 ML Bottle', `₹ ${totalCostPer500MLBottle.toFixed(2)}`, bottle500MLCost.toFixed(2), totalCost.toFixed(2)],
-        ['Cost / Per 1 Ltr Bottle', `₹ ${totalCostPer1LBottle.toFixed(2)}`, 'Cost / Ltr', costPerLiter.toFixed(2)],
-        [''],
-        ['METHOD OF PREPARATION'],
-        ...(formulation.methodOfPreparation?.map((step, i) => [`${i + 1}`, step]) || [])
-      ];
-      
-      const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
-      XLSX.utils.book_append_sheet(workbook, worksheet, formulation.name.substring(0, 30));
-    });
-    
-    XLSX.writeFile(workbook, 'Formulations.xlsx');
-  };
-
-  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const data = new Uint8Array(e.target?.result as ArrayBuffer);
-        const workbook = XLSX.read(data, { type: 'array' });
-        
-        // Process imported data here
-        console.log('Imported workbook:', workbook);
-        // You can implement the import logic based on your requirements
-        
-      } catch (error) {
-        console.error('Error importing file:', error);
-      }
-    };
-    reader.readAsArrayBuffer(file);
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
@@ -307,43 +220,13 @@ const Formulations = () => {
         <div className="max-w-7xl mx-auto">
           {/* Hero Section */}
           <div className="text-center mb-12">
-            <div className="flex justify-between items-center mb-8">
-              <div></div>
-              <div className="text-center">
-                <h2 className="text-4xl font-bold text-slate-800 mb-4">
-                  Professional Cleaning Formulations
-                </h2>
-                <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-                  Comprehensive cleaning formulation management system with detailed 
-                  recipes, cost analysis, and manufacturing instructions
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <input
-                  type="file"
-                  accept=".xlsx,.xls,.csv"
-                  onChange={handleImport}
-                  className="hidden"
-                  id="import-file"
-                />
-                <label htmlFor="import-file">
-                  <Button variant="outline" className="cursor-pointer" asChild>
-                    <div>
-                      <Upload className="h-4 w-4 mr-2" />
-                      Import
-                    </div>
-                  </Button>
-                </label>
-                <Button variant="outline" onClick={exportToPDF}>
-                  <FileText className="h-4 w-4 mr-2" />
-                  Export PDF
-                </Button>
-                <Button variant="outline" onClick={exportToExcel}>
-                  <FileSpreadsheet className="h-4 w-4 mr-2" />
-                  Export Excel
-                </Button>
-              </div>
-            </div>
+            <h2 className="text-4xl font-bold text-slate-800 mb-4">
+              Professional Cleaning Formulations
+            </h2>
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              Comprehensive cleaning formulation management system with detailed 
+              recipes, cost analysis, and manufacturing instructions
+            </p>
           </div>
 
           {/* Dashboard Grid - Changed from 5x3 to 3x5 */}
@@ -371,7 +254,7 @@ const Formulations = () => {
                       size="sm" 
                       className="mt-4 w-full group-hover:bg-blue-50 group-hover:border-blue-300 transition-colors"
                     >
-                      {formulation.id > 12 ? 'View Pricing' : 'View Formulation'}
+                      View Details
                     </Button>
                   </CardContent>
                 </Card>

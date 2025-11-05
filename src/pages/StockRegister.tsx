@@ -1167,7 +1167,6 @@ const StockRegister: React.FC = () => {
             {/* Warehouse Tab */}
             <TabsContent value="warehouse">
               <Card className="p-6 mb-6 shadow-lg">
-                <h3 className="text-xl font-semibold text-slate-800 mb-4">Add / Edit Warehouse Entrries - {format(selectedMonth, "MMMM yyyy")}</h3>
                 <div className="flex gap-4 items-end flex-wrap">
                   <div className="flex flex-col gap-2 min-w-[180px]">
                     <label className="text-sm font-medium text-slate-700">Product Name</label>
@@ -1267,7 +1266,6 @@ const StockRegister: React.FC = () => {
             {/* Distributor Tab */}
             <TabsContent value="distributor">
               <Card className="p-6 mb-6 shadow-lg">
-                <h3 className="text-xl font-semibold text-slate-800 mb-4">Add / Edit Distributor Entries - {format(selectedMonth, "MMMM yyyy")}</h3>
                 <div className="flex gap-4 items-end flex-wrap">
                   <div className="flex flex-col gap-2 min-w-[180px]">
                     <label className="text-sm font-medium text-slate-700">Product Name</label>
@@ -1367,7 +1365,6 @@ const StockRegister: React.FC = () => {
             {/* Raw Materials Tab */}
             <TabsContent value="rawmaterials">
               <Card className="p-6 mb-6 shadow-lg">
-                <h3 className="text-xl font-semibold text-slate-800 mb-4">Add / Edit Raw Material Entries - {format(selectedMonth, "MMMM yyyy")}</h3>
                 <div className="flex gap-4 items-end flex-wrap">
                   <div className="flex flex-col gap-2 min-w-[200px]">
                     <label className="text-sm font-medium text-slate-700">Chemical Name</label>
