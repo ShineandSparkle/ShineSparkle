@@ -14,7 +14,8 @@ import {
   FlaskConical, 
   DollarSign,
   Package,
-  Calculator
+  Calculator,
+  FileDown
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
@@ -219,14 +220,25 @@ const Formulations = () => {
       <main className="py-6 sm:py-12 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
           {/* Hero Section */}
-          <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
-              Professional Cleaning Formulations
-            </h2>
-            <p className="text-base sm:text-lg lg:text-xl text-slate-600 max-w-3xl mx-auto px-4">
-              Comprehensive cleaning formulation management system with detailed 
-              recipes, cost analysis, and manufacturing instructions
-            </p>
+          <div className="text-center mb-8 sm:mb-12 flex justify-between items-center">
+            <div className="flex-1">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
+                Professional Cleaning Formulations
+              </h2>
+              <p className="text-base sm:text-lg lg:text-xl text-slate-600 max-w-3xl mx-auto px-4">
+                Comprehensive cleaning formulation management system with detailed 
+                recipes, cost analysis, and manufacturing instructions
+              </p>
+            </div>
+            <Button
+              onClick={exportToPDF}
+              variant="outline"
+              size="icon"
+              className="ml-4"
+              title="Export all formulations to PDF"
+            >
+              <FileDown className="h-5 w-5" />
+            </Button>
           </div>
 
           {/* Dashboard Grid - Changed from 5x3 to 3x5 */}
@@ -246,16 +258,6 @@ const Formulations = () => {
                     <h3 className="font-semibold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors text-sm sm:text-base">
                       {formulation.name}
                     </h3>
-                    <p className="text-xs sm:text-sm text-slate-500 group-hover:text-slate-600 transition-colors">
-                      {formulation.description}
-                    </p>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="mt-3 sm:mt-4 w-full group-hover:bg-blue-50 group-hover:border-blue-300 transition-colors text-xs sm:text-sm"
-                    >
-                      View Details
-                    </Button>
                   </CardContent>
                 </Card>
               );
