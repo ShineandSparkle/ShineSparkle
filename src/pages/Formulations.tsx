@@ -226,36 +226,39 @@ const Formulations = () => {
                 Professional Cleaning Formulations
               </h2>
               <p className="text-base sm:text-lg lg:text-xl text-slate-600 max-w-3xl mx-auto px-4">
-                Comprehensive cleaning formulation management system with detailed 
-                recipes, cost analysis, and manufacturing instructions
-              </p>
+                Comprehensive cleaning formulation management system</p>
             </div>
             <Button
               onClick={exportToPDF}
               variant="outline"
-              size="icon"
               className="ml-4"
               title="Export all formulations to PDF"
             >
-              <FileDown className="h-5 w-5" />
+              Export PDF
             </Button>
+
           </div>
 
-          {/* Dashboard Grid - Changed from 5x3 to 3x5 */}
-          <div id="formulations" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-12 sm:mb-16">
+          {/* Dashboard Grid - Changed from 3x5 to 5x3 */}
+          <div
+            id="formulations"
+            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-8 sm:mb-10 max-h-[720px] overflow-y-auto pr-1"
+          >
             {formulations.map((formulation) => {
               const IconComponent = formulation.icon;
               return (
-                <Card 
-                  key={formulation.id} 
-                  className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer border-2 hover:border-blue-300"
+                <Card
+                  key={formulation.id}
+                  className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer border hover:border-blue-300"
                   onClick={() => handleFormulationClick(formulation)}
                 >
-                  <CardContent className="p-4 sm:p-6 text-center">
-                    <div className={`${formulation.color} w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                      <IconComponent className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+                  <CardContent className="p-3 sm:p-4 text-center">
+                    <div
+                      className={`${formulation.color} w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3 group-hover:scale-105 transition-transform duration-300`}
+                    >
+                      <IconComponent className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                     </div>
-                    <h3 className="font-semibold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors text-sm sm:text-base">
+                    <h3 className="font-semibold text-slate-800 mb-1 group-hover:text-blue-600 transition-colors text-sm">
                       {formulation.name}
                     </h3>
                   </CardContent>
