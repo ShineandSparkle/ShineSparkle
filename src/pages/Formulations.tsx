@@ -219,24 +219,26 @@ const Formulations = () => {
       
       <main className="py-6 sm:py-12 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
-          {/* Hero Section */}
-          <div className="text-center mb-8 sm:mb-12 flex justify-between items-center">
-            <div className="flex-1">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
-                Professional Cleaning Formulations
-              </h2>
-              <p className="text-base sm:text-lg lg:text-xl text-slate-600 max-w-3xl mx-auto px-4">
-                Comprehensive cleaning formulation management system</p>
-            </div>
+          {/* Hero Section & Export Button (Top Right)*/}
+          <div className="flex justify-end mb-6 sm:mb-8">
             <Button
               onClick={exportToPDF}
               variant="outline"
-              className="ml-4"
+              className="whitespace-nowrap"
               title="Export all formulations to PDF"
             >
               Export PDF
             </Button>
+          </div>
 
+          {/* Title + Description Section */}
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
+              Professional Cleaning Formulations
+            </h2>
+            <p className="text-base sm:text-lg lg:text-xl text-slate-600 max-w-3xl mx-auto px-4">
+              Comprehensive cleaning formulation management system
+            </p>
           </div>
 
           {/* Dashboard Grid - Changed from 3x5 to 5x3 */}
