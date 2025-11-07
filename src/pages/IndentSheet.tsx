@@ -9,10 +9,12 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formulationsData } from "@/data/formulations";
 import { format, startOfMonth } from "date-fns";
-import { Calendar as CalendarIcon, Save, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar as CalendarIcon, Save, ChevronLeft, ChevronRight, FileDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 interface QuantityInput {
   [formulationId: number]: number;
@@ -160,6 +162,82 @@ const IndentSheet = () => {
 
   const totalAmount = aggregatedIngredients.reduce((sum, ing) => sum + ing.totalAmount, 0);
 
+  const exportToPDF = () => {
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
+
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const monthYear = format(selectedMonth, "MMMM yyyy");
+
+    // Title
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.text("Indent Sheet - Total Required Ingredients", pageWidth / 2, 15, { align: "center" });
+
+    // Month
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Month: ${monthYear}`, pageWidth / 2, 23, { align: "center" });
+
+    // Table data
+    const tableData = aggregatedIngredients.map((ingredient, index) => [
+      (index + 1).toString(),
+      ingredient.particulars,
+      ingredient.uom,
+      formatNumber(ingredient.totalQty),
+      `₹${ingredient.rate.toFixed(2)}`,
+      `₹${ingredient.totalAmount.toFixed(2)}`,
+    ]);
+
+    // Add Grand Total row
+    tableData.push([
+      "",
+      "",
+      "",
+      "",
+      "Grand Total:",
+      `₹${totalAmount.toFixed(2)}`,
+    ]);
+
+    autoTable(doc, {
+      startY: 30,
+      head: [["Sl No", "Particulars", "UOM", "Total Qty", "Rate (₹)", "Total Amount (₹)"]],
+      body: tableData,
+      theme: "grid",
+      styles: {
+        fontSize: 9,
+        cellPadding: 3,
+      },
+      headStyles: {
+        fillColor: [31, 68, 182],
+        textColor: 255,
+        fontStyle: "bold",
+        halign: "center",
+      },
+      columnStyles: {
+        0: { halign: "center", cellWidth: 15 },
+        1: { halign: "left", cellWidth: 55 },
+        2: { halign: "center", cellWidth: 20 },
+        3: { halign: "right", cellWidth: 25 },
+        4: { halign: "right", cellWidth: 30 },
+        5: { halign: "right", cellWidth: 35 },
+      },
+      didParseCell: (data) => {
+        // Style the Grand Total row
+        if (data.row.index === tableData.length - 1) {
+          data.cell.styles.fontStyle = "bold";
+          data.cell.styles.fillColor = [240, 240, 240];
+        }
+      },
+    });
+
+    doc.save(`Indent_Sheet_${monthYear.replace(" ", "_")}.pdf`);
+    toast.success("PDF exported successfully");
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 to-indigo-50">
       <Header />
@@ -261,7 +339,17 @@ const IndentSheet = () => {
             style={{ boxShadow: "0 10px 15px -3px rgba(34,84,210,0.3), 0 4px 6px -2px rgba(34,84,210,0.2)" }}
           >
             <CardContent className="p-6">
-              <h2 className="text-2xl font-bold mb-4 text-slate-800">Total Required Ingredients</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold text-slate-800">Total Required Ingredients</h2>
+                <Button
+                  onClick={exportToPDF}
+                  variant="outline"
+                  size="icon"
+                  title="Export to PDF"
+                >
+                  <FileDown className="h-5 w-5" />
+                </Button>
+              </div>
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
