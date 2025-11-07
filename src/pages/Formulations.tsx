@@ -127,11 +127,6 @@ const Formulations = () => {
         parseFloat(ing.amount.toFixed(2))
       ]) || [];
       
-      // Add empty rows to match the format (up to 10 rows)
-      while (tableData.length < 10) {
-        tableData.push(['', '', '', '', '', 0]);
-      }
-      
       // Main ingredients table - width 160mm to fit A4 (210mm - 20mm margins)
       autoTable(doc, {
         startY: yPosition,
