@@ -13,16 +13,16 @@ import { detergentPowderFormulation } from "./formulations/detergentPowder";
 import { liquidDetergentFormulation } from "./formulations/liquidDetergent";
 
 export const formulationsData: FormulationData[] = [
-  phenylFormulation,
-  dishWashFormulation,
-  brassCleaningFormulation,
-  toiletCleanerFormulation,
   acidFormulation,
-  handWashFormulation,
+  brassCleaningFormulation,
   detergentPowderFormulation,
-  liquidDetergentFormulation,
+  dishWashFormulation,
   floorCleaningFormulation,
-  roseWaterFormulation,
+  handWashFormulation,
+  liquidDetergentFormulation,
   painReliefBalmFormulation,
+  phenylFormulation,
+  roseWaterFormulation,
+  toiletCleanerFormulation,
   whitePetroleumJellyFormulation
 ];
