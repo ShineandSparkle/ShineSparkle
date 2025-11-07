@@ -235,8 +235,8 @@ const IndentSheet = () => {
       ingredient.particulars,
       ingredient.uom,
       formatNumber(ingredient.totalQty),
-      `₹${ingredient.rate.toFixed(2)}`,
-      `₹${ingredient.totalAmount.toFixed(2)}`,
+      ingredient.rate.toFixed(2),
+      ingredient.totalAmount.toFixed(2),
     ]);
 
     // Add Grand Total row
@@ -246,12 +246,12 @@ const IndentSheet = () => {
       "",
       "",
       "Grand Total:",
-      `₹${totalAmount.toFixed(2)}`,
+      totalAmount.toFixed(2),
     ]);
 
     autoTable(doc, {
       startY: currentY,
-      head: [["Sl No", "Particulars", "UOM", "Total Qty", "Rate (₹)", "Total Amt (₹)"]],
+      head: [["Sl No", "Particulars", "UOM", "Total Qty", "Rate", "Total Amt"]],
       body: tableData,
       theme: "grid",
       styles: {

@@ -134,7 +134,7 @@ const Formulations = () => {
         body: tableData,
         theme: 'grid',
         styles: { fontSize: 9, cellPadding: 2 },
-        headStyles: { fillColor: [100, 100, 100], textColor: 255, fontStyle: 'bold' },
+        headStyles: { fillColor: [31, 68, 182], textColor: 255, fontStyle: 'bold' },
         columnStyles: {
           0: { halign: 'center', cellWidth: 20 },
           1: { cellWidth: 60 },
@@ -153,7 +153,7 @@ const Formulations = () => {
       autoTable(doc, {
         startY: yPosition,
         body: [
-          ['Cost / Per 500 ML Bottle', `₹  ${costPer500ML.toFixed(2)}`, bottle500MLCost.toFixed(2), totalCostPer500MLBottle.toFixed(2)]
+          ['Cost / Per 500 ML Bottle', `${costPer500ML.toFixed(2)}`, bottle500MLCost.toFixed(2), totalCostPer500MLBottle.toFixed(2)]
         ],
         theme: 'grid',
         styles: { fontSize: 10, cellPadding: 2 },
@@ -172,7 +172,7 @@ const Formulations = () => {
       autoTable(doc, {
         startY: yPosition,
         body: [
-          ['Cost / Per 1 Ltr Bottle', `₹  ${costPer1L.toFixed(2)}`, 'Cost / Ltr', totalCostPer1LBottle.toFixed(2)]
+          ['Cost / Per 1 Ltr Bottle', `${costPer1L.toFixed(2)}`, 'Cost / Ltr', totalCostPer1LBottle.toFixed(2)]
         ],
         theme: 'grid',
         styles: { fontSize: 10, cellPadding: 2 },
