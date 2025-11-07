@@ -182,14 +182,61 @@ const IndentSheet = () => {
     doc.setFont("helvetica", "normal");
     doc.text(`Month: ${monthYear}`, pageWidth / 2, 23, { align: "center" });
 
+    let currentY = 30;
+
+    // Indent Items Section
+    const indentItems = Object.entries(quantities)
+      .filter(([_, qty]) => qty > 0)
+      .map(([formulationId, quantity]) => {
+        const formulation = formulationsData.find((f) => f.id === parseInt(formulationId));
+        return formulation ? [formulation.name, quantity.toString()] : null;
+      })
+      .filter((item) => item !== null);
+
+    if (indentItems.length > 0) {
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.text("Indent Items", 14, currentY);
+      currentY += 7;
+
+      autoTable(doc, {
+        startY: currentY,
+        head: [["Product Name", "Quantity Required"]],
+        body: indentItems,
+        theme: "grid",
+        styles: {
+          fontSize: 10,
+          cellPadding: 3,
+        },
+        headStyles: {
+          fillColor: [31, 68, 182],
+          textColor: 255,
+          fontStyle: "bold",
+          halign: "center",
+        },
+        columnStyles: {
+          0: { halign: "left", cellWidth: 130 },
+          1: { halign: "center", cellWidth: 50 },
+        },
+      });
+
+      currentY = (doc as any).lastAutoTable.finalY + 10;
+    }
+
+    // Total Required Ingredients Section
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text("Total Required Ingredients", 14, currentY);
+    currentY += 7;
+
     // Table data
     const tableData = aggregatedIngredients.map((ingredient, index) => [
       (index + 1).toString(),
       ingredient.particulars,
       ingredient.uom,
       formatNumber(ingredient.totalQty),
-      `₹${ingredient.rate.toFixed(2)}`,
-      `₹${ingredient.totalAmount.toFixed(2)}`,
+      ingredient.rate.toFixed(2),
+      ingredient.totalAmount.toFixed(2),
     ]);
 
     // Add Grand Total row
@@ -199,16 +246,16 @@ const IndentSheet = () => {
       "",
       "",
       "Grand Total:",
-      `₹${totalAmount.toFixed(2)}`,
+      totalAmount.toFixed(2),
     ]);
 
     autoTable(doc, {
-      startY: 30,
+      startY: currentY,
       head: [["Sl No", "Particulars", "UOM", "Total Qty", "Rate (₹)", "Total Amount (₹)"]],
       body: tableData,
       theme: "grid",
       styles: {
-        fontSize: 9,
+        fontSize: 10,
         cellPadding: 3,
       },
       headStyles: {
@@ -221,9 +268,9 @@ const IndentSheet = () => {
         0: { halign: "center", cellWidth: 15 },
         1: { halign: "left", cellWidth: 55 },
         2: { halign: "center", cellWidth: 20 },
-        3: { halign: "right", cellWidth: 25 },
-        4: { halign: "right", cellWidth: 30 },
-        5: { halign: "right", cellWidth: 35 },
+        3: { halign: "center", cellWidth: 25 },
+        4: { halign: "center", cellWidth: 30 },
+        5: { halign: "center", cellWidth: 35 },
       },
       didParseCell: (data) => {
         // Style the Grand Total row
@@ -344,10 +391,10 @@ const IndentSheet = () => {
                 <Button
                   onClick={exportToPDF}
                   variant="outline"
-                  size="icon"
-                  title="Export to PDF"
+                  className="gap-2"
                 >
-                  <FileDown className="h-5 w-5" />
+                  <FileDown className="h-4 w-4" />
+                  Export PDF
                 </Button>
               </div>
               <div className="overflow-x-auto">
