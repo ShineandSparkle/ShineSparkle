@@ -165,7 +165,7 @@ const printInvoice = (invoice: any) => {
             <p><strong>Due Date:</strong> ${
               invoice.due_date
                 ? new Date(invoice.due_date).toLocaleDateString()
-                : new Date(new Date(invoice.invoice_date).getTime() + 30 * 86400000).toLocaleDateString()
+                : new Date(new Date(invoice.invoice_date).getTime() + 7 * 86400000).toLocaleDateString()
             }</p>
           </div>
         </div>
@@ -197,7 +197,7 @@ const printInvoice = (invoice: any) => {
             <span>₹${(invoice.subtotal || 0).toFixed(2)}</span>
           </div>
           <div class="total-row">
-            <span>Tax (${invoice.tax_rate || 18}%):</span>
+            <span>Tax (${invoice.tax_rate || 0}%):</span>
             <span>₹${(invoice.tax_amount || 0).toFixed(2)}</span>
           </div>
           <div class="total-row total-final">
