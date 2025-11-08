@@ -236,41 +236,48 @@ const InvoiceModal = ({ open, onClose, invoice, customers, onSave }: InvoiceModa
                   <div>
                     <Label>Description</Label>
                     <Select 
-                      value={item.description} 
                       onValueChange={(value) => handleItemChange(index, 'description', value)}
                     >
                       <SelectTrigger className="bg-white">
-                        <SelectValue placeholder="Select formulation or enter custom" />
+                        <SelectValue placeholder="Select formulation">
+                          {item.description || "Select formulation"}
+                        </SelectValue>
                       </SelectTrigger>
-                      <SelectContent className="bg-white border shadow-lg z-50 max-h-[300px]">
-                        {formulationsData.map((formulation) => (
-                          <>
-                            {formulation.costPer500ML > 0 && (
+                      <SelectContent className="bg-white border shadow-lg z-[100] max-h-[300px]">
+                        {formulationsData.map((formulation) => {
+                          const items = [];
+                          if (formulation.costPer500ML > 0) {
+                            items.push(
                               <SelectItem 
                                 key={`${formulation.id}-500ml`} 
                                 value={`${formulation.name}|500 ML|${formulation.costPer500ML}`}
                               >
                                 {formulation.name} - 500 ML (₹{formulation.costPer500ML.toFixed(2)})
                               </SelectItem>
-                            )}
-                            {formulation.costPer1L > 0 && (
+                            );
+                          }
+                          if (formulation.costPer1L > 0) {
+                            items.push(
                               <SelectItem 
                                 key={`${formulation.id}-1l`} 
                                 value={`${formulation.name}|1 Ltr|${formulation.costPer1L}`}
                               >
                                 {formulation.name} - 1 Ltr (₹{formulation.costPer1L.toFixed(2)})
                               </SelectItem>
-                            )}
-                            {formulation.costPer5L > 0 && (
+                            );
+                          }
+                          if (formulation.costPer5L > 0) {
+                            items.push(
                               <SelectItem 
                                 key={`${formulation.id}-5l`} 
                                 value={`${formulation.name}|5 Ltr|${formulation.costPer5L}`}
                               >
                                 {formulation.name} - 5 Ltr (₹{formulation.costPer5L.toFixed(2)})
                               </SelectItem>
-                            )}
-                          </>
-                        ))}
+                            );
+                          }
+                          return items;
+                        })}
                       </SelectContent>
                     </Select>
                   </div>
