@@ -28,6 +28,43 @@ const InvoiceModal = ({ open, onClose, invoice, customers, onSave }: InvoiceModa
         taxRate: 0,
     notes: ""
   });
+  const [priceData, setPriceData] = useState(formulationsData);
+
+  // Load custom prices from database
+  useEffect(() => {
+    const loadPrices = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('settings')
+          .select('setting_data')
+          .eq('setting_type', 'pricing')
+          .single();
+
+        if (data?.setting_data) {
+          const customPrices = data.setting_data;
+          const mergedPrices = formulationsData.map(formulation => {
+            const customPrice = customPrices[formulation.id];
+            if (customPrice) {
+              return {
+                ...formulation,
+                costPer500ML: customPrice.costPer500ML ?? formulation.costPer500ML,
+                costPer1L: customPrice.costPer1L ?? formulation.costPer1L,
+                costPer5L: customPrice.costPer5L ?? formulation.costPer5L,
+              };
+            }
+            return formulation;
+          });
+          setPriceData(mergedPrices);
+        }
+      } catch (error) {
+        console.error('Error loading prices:', error);
+      }
+    };
+    
+    if (open) {
+      loadPrices();
+    }
+  }, [open]);
 
   // Update form data when invoice prop changes
   useEffect(() => {
@@ -244,7 +281,7 @@ const InvoiceModal = ({ open, onClose, invoice, customers, onSave }: InvoiceModa
                         </SelectValue>
                       </SelectTrigger>
                       <SelectContent className="bg-white border shadow-lg z-[100] max-h-[300px]">
-                        {formulationsData.map((formulation) => {
+                        {priceData.map((formulation) => {
                           const items = [];
                           if (formulation.costPer500ML > 0) {
                             items.push(
