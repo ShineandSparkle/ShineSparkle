@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { formulationsData } from "@/data/formulations";
 
 interface InvoiceModalProps {
   open: boolean;
@@ -75,9 +76,21 @@ const InvoiceModal = ({ open, onClose, invoice, customers, onSave }: InvoiceModa
 
   const handleItemChange = (index: number, field: string, value: any) => {
     const newItems = [...formData.items];
-    newItems[index] = { ...newItems[index], [field]: value };
-    if (field === 'quantity' || field === 'rate') {
+    
+    // If description is being changed and it's a formulation selection
+    if (field === 'description' && value.includes('|')) {
+      const [formulationName, size, price] = value.split('|');
+      newItems[index] = { 
+        ...newItems[index], 
+        description: `${formulationName} - ${size}`,
+        rate: parseFloat(price)
+      };
       newItems[index].amount = newItems[index].quantity * newItems[index].rate;
+    } else {
+      newItems[index] = { ...newItems[index], [field]: value };
+      if (field === 'quantity' || field === 'rate') {
+        newItems[index].amount = newItems[index].quantity * newItems[index].rate;
+      }
     }
     setFormData({ ...formData, items: newItems });
   };
@@ -222,11 +235,44 @@ const InvoiceModal = ({ open, onClose, invoice, customers, onSave }: InvoiceModa
                 <div key={index} className="grid grid-cols-1 md:grid-cols-5 gap-2 items-end">
                   <div>
                     <Label>Description</Label>
-                    <Input
-                      value={item.description}
-                      onChange={(e) => handleItemChange(index, 'description', e.target.value)}
-                      placeholder="Item description"
-                    />
+                    <Select 
+                      value={item.description} 
+                      onValueChange={(value) => handleItemChange(index, 'description', value)}
+                    >
+                      <SelectTrigger className="bg-white">
+                        <SelectValue placeholder="Select formulation or enter custom" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border shadow-lg z-50 max-h-[300px]">
+                        {formulationsData.map((formulation) => (
+                          <>
+                            {formulation.costPer500ML > 0 && (
+                              <SelectItem 
+                                key={`${formulation.id}-500ml`} 
+                                value={`${formulation.name}|500 ML|${formulation.costPer500ML}`}
+                              >
+                                {formulation.name} - 500 ML (₹{formulation.costPer500ML.toFixed(2)})
+                              </SelectItem>
+                            )}
+                            {formulation.costPer1L > 0 && (
+                              <SelectItem 
+                                key={`${formulation.id}-1l`} 
+                                value={`${formulation.name}|1 Ltr|${formulation.costPer1L}`}
+                              >
+                                {formulation.name} - 1 Ltr (₹{formulation.costPer1L.toFixed(2)})
+                              </SelectItem>
+                            )}
+                            {formulation.costPer5L > 0 && (
+                              <SelectItem 
+                                key={`${formulation.id}-5l`} 
+                                value={`${formulation.name}|5 Ltr|${formulation.costPer5L}`}
+                              >
+                                {formulation.name} - 5 Ltr (₹{formulation.costPer5L.toFixed(2)})
+                              </SelectItem>
+                            )}
+                          </>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
                     <Label>Quantity</Label>

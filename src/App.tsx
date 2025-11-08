@@ -14,6 +14,7 @@ import IndentSheet from "./pages/IndentSheet";
 import StockRegister from "./pages/StockRegister";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import Prices from "./pages/Prices";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/chemical-prices" element={<ChemicalPrices />} />
           <Route path="/indent-sheet" element={<IndentSheet />} />
           <Route path="/stock-register" element={<StockRegister />} />
+          <Route path="/prices" element={<Prices />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
