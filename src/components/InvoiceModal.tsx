@@ -299,36 +299,26 @@ const InvoiceModal = ({
                 >
                 <div>
                   <Label>Product Name</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      value={item.description}
-                      onChange={(e) =>
-                        handleItemChange(index, "description", e.target.value)
-                      }
-                      placeholder="Enter product name"
-                      className="flex-1"
-                    />
-                    <Select
-                      onValueChange={(value) =>
-                        handleItemChange(index, "description", value)
-                      }
-                    >
-                      <SelectTrigger className="bg-white w-[140px]">
-                        <SelectValue placeholder="Quick select" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-white border shadow-lg max-h-[300px] z-[100]">
-                        {priceData.map((formulation) => (
-                          <SelectItem
-                            key={formulation.id}
-                            value={`${formulation.name}|1 Ltr|${formulation.costPer1L}`}
-                          >
-                            {formulation.name} - 1 Ltr (₹
-                            {formulation.costPer1L.toFixed(2)})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  <Select
+                    onValueChange={(value) =>
+                      handleItemChange(index, "description", value)
+                    }
+                  >
+                    <SelectTrigger className="bg-white">
+                      <SelectValue placeholder={item.description || "Select product"} />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border shadow-lg max-h-[300px] z-[100]">
+                      {priceData.map((formulation) => (
+                        <SelectItem
+                          key={formulation.id}
+                          value={`${formulation.name}|1 Ltr|${formulation.costPer1L}`}
+                        >
+                          {formulation.name} - 1 Ltr (₹
+                          {formulation.costPer1L.toFixed(2)})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                   <div>
