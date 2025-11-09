@@ -297,20 +297,26 @@ const InvoiceModal = ({
                   key={index}
                   className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr_1fr_auto] gap-2 items-end"
                 >
-                  <div>
-                    <Label>Product Name</Label>
+                <div>
+                  <Label>Product Name</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={item.description}
+                      onChange={(e) =>
+                        handleItemChange(index, "description", e.target.value)
+                      }
+                      placeholder="Enter product name"
+                      className="flex-1"
+                    />
                     <Select
                       onValueChange={(value) =>
                         handleItemChange(index, "description", value)
                       }
                     >
-                      <SelectTrigger className="bg-white">
-                        <SelectValue
-                          placeholder="Select product"
-                          defaultValue={item.description}
-                        />
+                      <SelectTrigger className="bg-white w-[140px]">
+                        <SelectValue placeholder="Quick select" />
                       </SelectTrigger>
-                      <SelectContent className="bg-white border shadow-lg max-h-[300px] z-50">
+                      <SelectContent className="bg-white border shadow-lg max-h-[300px] z-[100]">
                         {priceData.map((formulation) => (
                           <SelectItem
                             key={formulation.id}
@@ -323,6 +329,7 @@ const InvoiceModal = ({
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
 
                   <div>
                     <Label>Qty</Label>
