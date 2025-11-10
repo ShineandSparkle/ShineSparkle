@@ -2,17 +2,17 @@ import { PricingData, PackingData } from "./types";
 
 export const productPricesData: PricingData[] = [
     { id: 5, product: "Acid", uom: "1 Ltr", retailPrice: 50, bulkPrice5Ltr: 200 },
-    { id: 3, product: "Brass Cleaning Liquid", uom: "500 ML", retailPrice: 100, bulkPrice5Ltr: 900 },
-    { id: 7, product: "Detergent Powder", uom: "1 Kg", retailPrice: 150, bulkPrice5Ltr: 700 },
-    { id: 2, product: "Dish Wash Liquid", uom: "500 ML", retailPrice: 80, bulkPrice5Ltr: 750 },
-    { id: 9, product: "Floor Cleaning Liquid", uom: "1 Ltr", retailPrice: 100, bulkPrice5Ltr: 450 },
-    { id: 6, product: "Hand Wash Liquid", uom: "500 ML", retailPrice: 100, bulkPrice5Ltr: 900 },
-    { id: 8, product: "Liquid Detergent", uom: "1 Ltr", retailPrice: 100, bulkPrice5Ltr: 450 },
-    { id: 1, product: "Phenyl", uom: "1 Ltr", retailPrice: 60, bulkPrice5Ltr: 250 },
-    { id: 10, product: "Rose Water", uom: "1 Ltr", retailPrice: 60, bulkPrice5Ltr: 250 },
-    { id: 4, product: "Toilet Cleaner", uom: "1 Ltr", retailPrice: 100, bulkPrice5Ltr: 450 },
-    { id: 12, product: "Vaseline", uom: "25 Gms", retailPrice: 25, bulkPrice100Gms: 75 },
-    { id: 11, product: "Zandu Balm", uom: "25 Gms", retailPrice: 80, bulkPrice100Gms: 280 },
+    { id: 3, product: "Brass Cleaning Liquid", uom: "500 ML", retailPrice: 100, bulkPrice5Ltr: 100 },
+    { id: 7, product: "Detergent Powder", uom: "1 Kg", retailPrice: 150, bulkPrice5Ltr: 750 },
+    { id: 2, product: "Dish Wash Liquid", uom: "500 ML", retailPrice: 80, bulkPrice5Ltr: 800 },
+    { id: 9, product: "Floor Cleaning Liquid", uom: "1 Ltr", retailPrice: 100, bulkPrice5Ltr: 500 },
+    { id: 6, product: "Hand Wash Liquid", uom: "500 ML", retailPrice: 100, bulkPrice5Ltr: 1000 },
+    { id: 8, product: "Liquid Detergent", uom: "1 Ltr", retailPrice: 100, bulkPrice5Ltr: 500 },
+    { id: 1, product: "Phenyl", uom: "1 Ltr", retailPrice: 60, bulkPrice5Ltr: 300 },
+    { id: 10, product: "Rose Water", uom: "1 Ltr", retailPrice: 60, bulkPrice5Ltr: 300 },
+    { id: 4, product: "Toilet Cleaner", uom: "1 Ltr", retailPrice: 100, bulkPrice5Ltr: 500 },
+    { id: 12, product: "Vaseline", uom: "25 Gms", retailPrice: 25, bulkPrice100Gms: 100 },
+    { id: 11, product: "Zandu Balm", uom: "25 Gms", retailPrice: 80, bulkPrice100Gms: 320 },
 ];
 
 export const packingMaterialsData: PackingData[] = [
